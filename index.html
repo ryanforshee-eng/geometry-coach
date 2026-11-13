@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Geometry Coach</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f6f4ef; --card:#ffffff; --ink:#1f2a37; --muted:#5b6675; --line:#e3ded3;
+  --brand:#2f5d8a; --brand-2:#e2ecf6; --accent:#e07a3f; --accent-2:#fbe9dd;
+  --good:#2e8b57; --good-2:#e3f3ea; --bad:#c0392b; --bad-2:#fbe7e4; --warn:#b7791f; --warn-2:#fdf3dc;
+  --r:14px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:Lexend,system-ui,sans-serif;font-size:17px;line-height:1.5}
+button{font:inherit;cursor:pointer}
+a{color:var(--brand)}
+.wrap{max-width:860px;margin:0 auto;padding:0 20px 60px}
+header{background:var(--brand);color:#fff}
+header .wrap{display:flex;align-items:center;gap:16px;padding-top:16px;padding-bottom:0;flex-wrap:wrap}
+.logo{font-weight:700;font-size:1.25rem;letter-spacing:.2px;display:flex;align-items:center;gap:10px}
+.logo svg{flex:none}
+.hstats{margin-left:auto;font-size:.9rem;opacity:.9}
+nav{display:flex;gap:4px;width:100%;margin-top:12px}
+nav button{background:transparent;border:0;color:#d6e3f0;padding:10px 16px;border-radius:10px 10px 0 0;font-weight:500}
+nav button.on{background:var(--bg);color:var(--ink)}
+h1{font-size:1.6rem;margin:28px 0 6px}
+h2{font-size:1.2rem;margin:28px 0 10px}
+h3{font-size:1.05rem;margin:0 0 6px}
+.sub{color:var(--muted);margin:0 0 18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:20px 22px;margin:14px 0}
+.hero{border:2px solid var(--brand);}
+.row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.btn{background:var(--brand);color:#fff;border:0;border-radius:10px;padding:11px 20px;font-weight:600}
+.btn:hover{filter:brightness(1.08)}
+.btn.alt{background:var(--brand-2);color:var(--brand)}
+.btn.ghost{background:transparent;color:var(--brand);border:1px solid var(--line)}
+.btn.orange{background:var(--accent)}
+.btn:disabled{opacity:.45;cursor:default}
+.tag{display:inline-block;font-size:.78rem;font-weight:600;padding:3px 9px;border-radius:99px;background:var(--brand-2);color:var(--brand)}
+.tag.good{background:var(--good-2);color:var(--good)}
+.tag.warn{background:var(--warn-2);color:var(--warn)}
+.tag.new{background:#eee;color:#666}
+.tag.bad{background:var(--bad-2);color:var(--bad)}
+.path{list-style:none;padding:0;margin:0}
+.path li{display:flex;align-items:center;gap:14px;padding:12px 4px;border-bottom:1px solid var(--line)}
+.path li:last-child{border-bottom:0}
+.dot{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:.85rem;flex:none;background:#eee;color:#777}
+.dot.done{background:var(--good);color:#fff}
+.dot.next{background:var(--accent);color:#fff}
+.path .t{flex:1}
+.path .t small{display:block;color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px}
+.stat b{display:block;font-size:1.6rem}
+.stat span{color:var(--muted);font-size:.85rem}
+.learn ul{padding-left:20px;margin:8px 0}
+.learn li{margin:6px 0}
+.example{background:var(--accent-2);border-radius:10px;padding:12px 16px;margin:12px 0}
+.mono{font-variant-numeric:tabular-nums}
+.qhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;color:var(--muted);font-size:.9rem}
+.bar{height:8px;background:#eee;border-radius:99px;overflow:hidden}
+.bar>i{display:block;height:100%;background:var(--brand)}
+.prompt{font-size:1.15rem;margin:8px 0 14px}
+.diagram{margin:6px 0 14px;overflow-x:auto}
+.opts{display:grid;gap:10px}
+.opt{text-align:left;background:#fff;border:2px solid var(--line);border-radius:12px;padding:12px 16px}
+.opt:hover:not(:disabled){border-color:var(--brand)}
+.opt.sel{border-color:var(--brand);background:var(--brand-2)}
+.opt.right{border-color:var(--good);background:var(--good-2)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-2)}
+.ans{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.ans input{font:inherit;font-size:1.15rem;padding:10px 12px;border:2px solid var(--line);border-radius:10px;width:170px}
+.ans input:focus{outline:none;border-color:var(--brand)}
+.ans .pt input{width:90px}
+.chips{display:flex;gap:6px;margin-top:10px}
+.chip{border:1px solid var(--line);background:#fff;border-radius:8px;padding:4px 12px;font-size:1rem}
+.fb{border-radius:12px;padding:12px 16px;margin-top:14px}
+.fb.good{background:var(--good-2);border-left:5px solid var(--good)}
+.fb.bad{background:var(--bad-2);border-left:5px solid var(--bad)}
+.fb.hint{background:var(--warn-2);border-left:5px solid var(--warn)}
+.steps{margin:8px 0 0;padding-left:20px}
+.steps li{margin:3px 0}
+table.tw{border-collapse:collapse;margin:6px 0 14px}
+table.tw td,table.tw th{border:1px solid var(--line);padding:6px 14px;text-align:center}
+table.tw th{background:var(--brand-2)}
+.skill{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}
+.skill:last-child{border-bottom:0}
+.skill .nm{flex:1}
+.skill .nm small{display:block;color:var(--muted)}
+.minibar{width:90px}
+textarea{width:100%;font:inherit;font-size:.9rem;border:1px solid var(--line);border-radius:10px;padding:10px;min-height:150px}
+.muted{color:var(--muted)}
+.small{font-size:.88rem}
+.hide{display:none}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:10px;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.on{opacity:1}
+.vids{margin-top:8px;font-size:.92rem}
+.kbd{font-size:.8rem;color:var(--muted)}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="logo">
+      <svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><polygon points="15,3 27,26 3,26" fill="none" stroke="#fff" stroke-width="2.5"/><circle cx="15" cy="18" r="4" fill="#e07a3f"/></svg>
+      Geometry Coach
+    </div>
+    <div class="hstats" id="hstats"></div>
+    <nav>
+      <button data-tab="today" class="on">Today</button>
+      <button data-tab="practice">Practice by skill</button>
+      <button data-tab="progress">Progress</button>
+    </nav>
+  </div>
+</header>
+<main class="wrap" id="main"></main>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ---------- helpers ---------- */
+const ri=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const gcd=(a,b)=>{a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b];}return a||1;};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function fmtN(v){ if(Math.abs(v-Math.round(v))<1e-9){const r=Math.round(v);return (r<0?'−':'')+Math.abs(r);} const s=(+v.toFixed(2)).toString(); return s.replace('-','−'); }
+function frac(n,d){ if(d<0){n=-n;d=-d;} const g=gcd(n,d); n/=g; d/=g; return d===1?fmtN(n):(n<0?'−':'')+Math.abs(n)+'/'+d; }
+const P=(x,y)=>'('+fmtN(x)+', '+fmtN(y)+')';
+function lin(p,q,v='x'){ let a=(p===1?'':p===-1?'−':p)+v; if(q>0)a+=' + '+q; else if(q<0)a+=' − '+(-q); return a; }
+const sq=v=>v<0?'('+fmtN(v)+')':fmtN(v);
+function todayStr(d=new Date()){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function niceDate(s){const [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d).toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'});}
+function parseNum(raw){
+  let s=String(raw).trim().replace(/\s+/g,'').replace(/[−–—]/g,'-').replace(/,/g,'');
+  if(!s) return NaN;
+  let pct=false; if(s.endsWith('%')){pct=true;s=s.slice(0,-1);}
+  let v,m;
+  if((m=s.match(/^(-?\d*\.?\d*)(?:√|sqrt)\(?(\d*\.?\d+)\)?$/i))){const c=m[1]===''?1:m[1]==='-'?-1:parseFloat(m[1]);v=c*Math.sqrt(parseFloat(m[2]));}
+  else if((m=s.match(/^(-?\d*\.?\d+)\/(-?\d*\.?\d+)$/))){v=parseFloat(m[1])/parseFloat(m[2]);}
+  else if(/^-?\d*\.?\d+$/.test(s)) v=parseFloat(s);
+  else v=NaN;
+  if(pct) v/=100;
+  return v;
+}
+
+/* ---------- diagrams ---------- */
+function segDiagram(L,a,b,txt){
+  const W=460,x0=30,x1=x0+(W-60)*a/(a+b),x2=W-30;
+  return `<svg viewBox="0 0 ${W} 100" width="${W}" style="max-width:100%">
+  <line x1="10" y1="45" x2="${W-10}" y2="45" stroke="#1f2a37" stroke-width="2"/>
+  ${[x0,x1,x2].map((x,i)=>`<circle cx="${x}" cy="45" r="5" fill="#2f5d8a"/><text x="${x}" y="72" text-anchor="middle" font-weight="600" font-size="16">${L[i]}</text>`).join('')}
+  <text x="${(x0+x1)/2}" y="35" text-anchor="middle" fill="#e07a3f" font-size="15" font-weight="600">${txt[0]}</text>
+  <text x="${(x1+x2)/2}" y="35" text-anchor="middle" fill="#e07a3f" font-size="15" font-weight="600">${txt[1]}</text>
+  ${txt[2]?`<path d="M${x0} 84 L${x0} 90 L${x2} 90 L${x2} 84" fill="none" stroke="#5b6675"/><text x="${(x0+x2)/2}" y="99" text-anchor="middle" fill="#5b6675" font-size="13">${L[0]}${L[2]} = ${txt[2]}</text>`:''}
+  </svg>`;
+}
+function numLine(min,max,marks){
+  const W=520,pad=24,sx=v=>pad+(v-min)*(W-2*pad)/(max-min);
+  let ticks='';const step=(max-min)>30?5:(max-min)>16?2:1;
+  for(let v=Math.ceil(min/step)*step;v<=max;v+=step){ticks+=`<line x1="${sx(v)}" y1="40" x2="${sx(v)}" y2="50" stroke="#1f2a37"/><text x="${sx(v)}" y="68" text-anchor="middle" font-size="12" fill="#5b6675">${fmtN(v)}</text>`;}
+  const m=marks.map(k=>`<circle cx="${sx(k.v)}" cy="45" r="6" fill="#e07a3f"/><text x="${sx(k.v)}" y="28" text-anchor="middle" font-weight="700" font-size="15">${k.label}</text>`).join('');
+  return `<svg viewBox="0 0 ${W} 80" width="${W}" style="max-width:100%"><line x1="8" y1="45" x2="${W-8}" y2="45" stroke="#1f2a37" stroke-width="2"/><polygon points="${W-8},45 ${W-16},40 ${W-16},50" fill="#1f2a37"/><polygon points="8,45 16,40 16,50" fill="#1f2a37"/>${ticks}${m}</svg>`;
+}
+const lineFig=`<svg viewBox="0 0 420 90" width="420" style="max-width:100%"><line x1="10" y1="50" x2="410" y2="50" stroke="#1f2a37" stroke-width="2"/><polygon points="410,50 400,45 400,55"/><polygon points="10,50 20,45 20,55"/>${[[90,'A'],[210,'B'],[330,'C']].map(([x,l])=>`<circle cx="${x}" cy="50" r="5" fill="#2f5d8a"/><text x="${x}" y="80" text-anchor="middle" font-weight="600">${l}</text>`).join('')}<text x="395" y="35" font-style="italic" font-weight="600">ℓ</text><circle cx="250" cy="18" r="5" fill="#e07a3f"/><text x="262" y="22" font-weight="600">D</text></svg>`;
+
+/* ---------- MC banks ---------- */
+const BANK={
+s11a:[
+ {q:'Which of these is an <b>undefined term</b> in geometry?',o:[['Point',1,'Right! Point, line, and plane are the three undefined terms.'],['Segment',0,'A segment is <i>defined</i> using points and a line (two endpoints and all points between them).'],['Ray',0,'A ray is defined using points and a line, so it’s a defined term.'],['Angle',0,'An angle is defined as two rays with a common endpoint, so it’s a defined term.']]},
+ {q:'Why are point, line, and plane called “undefined”?',o:[['Any definition would need other words, so we have to start somewhere: they’re described, not defined.',1,'Exactly. Every system needs a starting place.'],['Mathematicians haven’t agreed on what they mean.',0,'They agree on what they mean. The point is that defining them would require even more basic words.'],['They are never used in proofs.',0,'They’re used constantly. They’re the building blocks for everything else.'],['They can’t be drawn.',0,'We draw them all the time (dots, arrows, flat shapes). We just don’t give them formal definitions.']]},
+ {q:'A <b>line segment</b> is…',o:[['part of a line made of two endpoints and all the points between them',1,'Yes!'],['a line that goes on forever in both directions',0,'That describes a line, not a segment.'],['part of a line with one endpoint that goes on forever in one direction',0,'That’s a ray.'],['a flat surface with no thickness',0,'That’s a plane.']]},
+ {q:'A <b>plane</b>…',o:[['extends forever in all directions and has no thickness',1,'Correct.'],['is a rectangle with four edges',0,'We often <i>draw</i> it as a parallelogram, but a plane has no edges. It goes on forever.'],['has a thickness of one unit',0,'A plane has no thickness at all.'],['is made of exactly three points',0,'Three noncollinear points <i>determine</i> a plane, but the plane holds infinitely many points.']]},
+ {q:'In what order is an axiomatic system built?',o:[['Undefined terms → definitions → postulates → theorems',1,'Yes. Each level is built from the ones before it.'],['Theorems → postulates → definitions → undefined terms',0,'That’s backwards. Theorems come last because they’re proven from everything else.'],['Postulates → undefined terms → theorems → definitions',0,'You need the undefined terms before you can state postulates about them.'],['Definitions → theorems → undefined terms → postulates',0,'Definitions are built from undefined terms, so undefined terms must come first.']]},
+ {q:'A <b>ray</b> has…',o:[['one endpoint and extends forever in one direction',1,'Right.'],['two endpoints',0,'That’s a segment.'],['no endpoints',0,'That’s a line.'],['one endpoint and extends in both directions',0,'If it went both ways from a point, it would be two rays (opposite rays), not one ray.']]}
+],
+s11b:[
+ {q:'A <b>postulate</b> (axiom) is a statement that…',o:[['is accepted as true without proof',1,'Correct.'],['has been proven using other statements',0,'That’s a theorem.'],['is a guess based on examples',0,'That’s a conjecture.'],['defines a new word',0,'That’s a definition.']]},
+ {q:'A <b>theorem</b> is a statement that…',o:[['has been proven using definitions, postulates, and other theorems',1,'Yes!'],['is accepted without proof',0,'That’s a postulate (axiom).'],['is true because it works for several examples',0,'Examples can suggest something is true, but only a proof makes it a theorem.'],['can never be used in another proof',0,'Theorems are used to prove other theorems all the time.']]},
+ {q:'“Through any two points there is exactly one line.” This statement is a…',o:[['postulate',1,'Right. It’s one of the basic rules we accept without proof.'],['theorem',0,'It isn’t proven from anything; it’s one of the starting rules. That makes it a postulate.'],['definition',0,'It doesn’t define a word. It states a rule about points and lines.'],['conjecture',0,'It’s not a guess. It’s an accepted rule (postulate).']]},
+ {q:'Maya drew 5 triangles and noticed each time that the angles added to 180°. Her statement is best called a…',o:[['conjecture',1,'Yes. Checking examples suggests it’s true, but it isn’t proven yet.'],['theorem',0,'It IS a true theorem, but Maya hasn’t proven it. Checking 5 examples isn’t a proof, so for her it’s still a conjecture.'],['postulate',0,'Postulates are accepted starting rules, not patterns noticed from examples.'],['undefined term',0,'Undefined terms are point, line, and plane.']]},
+ {q:'In a <b>consistent</b> axiomatic system…',o:[['no two statements contradict each other',1,'Correct.'],['every statement is a postulate',0,'Consistent means no contradictions, not that everything is a postulate.'],['there are no undefined terms',0,'Every axiomatic system starts with undefined terms.'],['theorems are accepted without proof',0,'Theorems always need proof.']]},
+ {q:'Which is the best way to show a conjecture is <b>false</b>?',o:[['Find one counterexample',1,'Yes. One example where it fails is enough to show it’s false.'],['Find three examples where it works',0,'Examples where it works can’t prove it false (or prove it true).'],['Call it a postulate',0,'Renaming it doesn’t change whether it’s true.'],['Draw it very carefully',0,'A careful drawing can suggest things, but a single counterexample is what disproves a conjecture.']]}
+],
+s12a:[
+ {q:'Which is <b>NOT</b> a correct name for the line shown?',fig:lineFig,o:[['line A',1,'Right. A single point can’t name a line; you need two points on it, or the lowercase letter.'],['line AC',0,'That one works: A and C are both on the line. Look for a name that doesn’t work.'],['line ℓ',0,'That one works: lowercase script letters can name lines.'],['line BA',0,'That one works: order doesn’t matter for naming a line.']]},
+ {q:'Using the figure, which point is <b>not</b> collinear with A and B?',fig:lineFig,o:[['D',1,'Correct. D is off line ℓ.'],['C',0,'C is on line ℓ with A and B, so it IS collinear with them.'],['A',0,'A is one of the points we’re comparing to.'],['B',0,'B is one of the points we’re comparing to.']]},
+ {q:'A plane can be named by…',o:[['three noncollinear points in it, or a capital script letter',1,'Yes!'],['any two points in it',0,'Two points name a line, and infinitely many planes contain any one line.'],['three collinear points in it',0,'Three points in a row lie in infinitely many planes, so they can’t name just one.'],['a lowercase letter',0,'Lowercase letters usually name lines.']]},
+ {q:'Ray AB starts at…',o:[['point A and passes through B',1,'Right. The first letter is always the endpoint.'],['point B and passes through A',0,'That’s ray BA. The first letter is the endpoint.'],['the midpoint of A and B',0,'Rays start at an endpoint, the first letter in the name.'],['neither point; it has no endpoint',0,'That would be a line. A ray has one endpoint.']]},
+ {q:'Are ray AB and ray BA the same ray?',o:[['No. They have different endpoints and point in opposite directions.',1,'Exactly.'],['Yes. They contain the same two points.',0,'They share points A and B, but ray AB starts at A and goes past B, while ray BA starts at B and goes past A.'],['Only if AB is short',0,'Length doesn’t matter. The endpoint and direction make them different.'],['Yes. Order never matters in names.',0,'Order doesn’t matter for lines and segments, but it DOES matter for rays.']]},
+ {q:'Segment AB and segment BA are…',o:[['the same segment',1,'Yes. A segment is just the two endpoints and everything between, so order doesn’t matter.'],['different segments',0,'Both have endpoints A and B and the same points between, so they’re identical.'],['opposite rays',0,'Segments and rays are different things.'],['only the same if they’re horizontal',0,'Direction on the page doesn’t matter.']]}
+],
+s12b:[
+ {q:'Points that lie on the same line are called…',o:[['collinear',1,'Correct.'],['coplanar',0,'Coplanar means in the same <i>plane</i>. Same <i>line</i> is collinear.'],['congruent',0,'Congruent means same size and shape.'],['concurrent',0,'Concurrent describes lines meeting at a single point.']]},
+ {q:'Any three points are <b>always</b>…',o:[['coplanar',1,'Yes. Any three points lie in at least one plane.'],['collinear',0,'Not always. Three points could form a triangle.'],['noncoplanar',0,'You can always fit a plane through any three points.'],['the vertices of a triangle',0,'Not if they happen to be in a straight line.']]},
+ {q:'Two different planes that intersect meet in a…',o:[['line',1,'Right. Think of two walls meeting at a corner line.'],['point',0,'Planes are infinite and flat, so if they meet, they meet along a whole line.'],['plane',0,'Then they’d be the same plane.'],['segment',0,'Planes go on forever, so their intersection does too: a line, not a segment.']]},
+ {q:'Two different lines can intersect in at most…',o:[['one point',1,'Correct.'],['two points',0,'If two lines shared two points, they’d be the same line (only one line goes through two points).'],['a line',0,'Then they’d be the same line.'],['infinitely many points',0,'Only if they’re the same line.']]},
+ {q:'How many planes contain three <b>noncollinear</b> points?',o:[['exactly one',1,'Yes. That’s a postulate.'],['none',0,'There’s always a plane through them.'],['two',0,'Three noncollinear points pin down exactly one plane, like a 3-legged stool.'],['infinitely many',0,'That happens with collinear points. Noncollinear points determine exactly one plane.']]},
+ {q:'Three different planes can intersect in…',o:[['a point, a line, or not at all, depending on how they’re arranged',1,'Right. Picture a room corner (a point), pages of a book (a line), or three parallel floors (no intersection).'],['always exactly one point',0,'That’s one possibility (a corner), but not the only one.'],['always a line',0,'That happens with pages of a book, but planes can also meet at a point or not at all.'],['always a plane',0,'Different planes can’t share a whole plane.']]},
+ {q:'Are any <b>four</b> points always coplanar?',o:[['No. The fourth point could be above or below the plane of the other three.',1,'Correct. Think of the corners of a pyramid with a triangle base.'],['Yes, always',0,'Three points always fit in a plane, but a fourth can stick out of it.'],['Only if they form a square',0,'A square is one coplanar case, but the real answer is “not always.”'],['Yes, if they are collinear',0,'Collinear points ARE coplanar, but the question asks about ANY four points.']]}
+]};
+function mcGen(id){
+  return ()=>{
+    const bank=BANK[id]; const recent=(state.recent[id]||[]);
+    let idx; let tries=0; do{idx=ri(0,bank.length-1);tries++;}while(recent.includes(idx)&&tries<20);
+    state.recent[id]=[idx,...recent].slice(0,Math.min(3,bank.length-1));
+    const it=bank[idx];
+    return {kind:'mc',prompt:it.q,svg:it.fig||'',options:shuffle(it.o.map(([t,ok,fb])=>({t,ok:!!ok,fb}))),hint:'Read every choice. Rule out the ones you know are wrong first.'};
+  };
+}
+
+/* ---------- generators ---------- */
+const LETTERS=[['A','B','C'],['P','Q','R'],['J','K','L'],['R','S','T']];
+function g13a(){
+  const [X,Y,Z]=pick(LETTERS); const a=ri(2,14)+(Math.random()<.3?.5:0), b=ri(2,14);
+  if(Math.random()<.5) return {kind:'num',ans:a+b,tol:.01,
+    prompt:`${Y} is between ${X} and ${Z}. ${X}${Y} = ${fmtN(a)} and ${Y}${Z} = ${fmtN(b)}. Find ${X}${Z}.`,
+    svg:segDiagram([X,Y,Z],a,b,[fmtN(a),fmtN(b),'?']),
+    traps:[{v:Math.abs(a-b),k:'subtracted pieces instead of adding',msg:`It looks like you subtracted. When ${Y} is between ${X} and ${Z}, the two pieces add up to the whole.`}],
+    hint:`Segment Addition: ${X}${Y} + ${Y}${Z} = ${X}${Z}.`,
+    steps:[`${X}${Y} + ${Y}${Z} = ${X}${Z}`,`${fmtN(a)} + ${fmtN(b)} = ${fmtN(a+b)}`]};
+  return {kind:'num',ans:b,tol:.01,
+    prompt:`${Y} is between ${X} and ${Z}. ${X}${Z} = ${fmtN(a+b)} and ${X}${Y} = ${fmtN(a)}. Find ${Y}${Z}.`,
+    svg:segDiagram([X,Y,Z],a,b,[fmtN(a),'?',fmtN(a+b)]),
+    traps:[{v:2*a+b,k:'added whole + part',msg:`You added ${X}${Z} and ${X}${Y}. ${X}${Z} is the <i>whole</i>, so subtract the part you know: whole − part = missing part.`}],
+    hint:`${X}${Y} + ${Y}${Z} = ${X}${Z}, so ${Y}${Z} = ${X}${Z} − ${X}${Y}.`,
+    steps:[`${X}${Y} + ${Y}${Z} = ${X}${Z}`,`${fmtN(a)} + ${Y}${Z} = ${fmtN(a+b)}`,`${Y}${Z} = ${fmtN(a+b)} − ${fmtN(a)} = ${fmtN(b)}`]};
+}
+function g13b(){
+  const [X,Y,Z]=pick(LETTERS); let x,p,r,q,s;
+  do{x=ri(2,9);p=ri(1,5);r=ri(1,5);q=ri(-5,8);s=ri(-5,8);}while(p*x+q<=0||r*x+s<=0||p===r);
+  const t=(p+r)*x+q+s, AB=p*x+q, BC=r*x+s;
+  const steps=[`${X}${Y} + ${Y}${Z} = ${X}${Z}`,`(${lin(p,q)}) + (${lin(r,s)}) = ${t}`,`${lin(p+r,q+s)} = ${t}`,`${p+r===1?'x':(p+r)+'x'} = ${fmtN(t-(q+s))}`,`x = ${x}`];
+  const base=`${Y} is between ${X} and ${Z}. ${X}${Y} = ${lin(p,q)}, ${Y}${Z} = ${lin(r,s)}, and ${X}${Z} = ${t}.`;
+  const svg=segDiagram([X,Y,Z],AB,BC,[lin(p,q),lin(r,s),String(t)]);
+  const hint=`Write ${X}${Y} + ${Y}${Z} = ${X}${Z}, combine like terms, then solve for x.`;
+  const traps=[{v:(s-q)/(p-r),k:'set the two pieces equal',msg:`It looks like you set ${X}${Y} = ${Y}${Z}. That’s only true if ${Y} is the midpoint. Here the pieces <i>add</i> to ${X}${Z}.`},{v:t/(p+r),k:'forgot to move constants',msg:'Close. Don’t forget to subtract the constant numbers from both sides before dividing.'}];
+  if(Math.random()<.55) return {kind:'num',ans:x,tol:.01,prompt:base+' Find x.',svg,traps,hint,steps};
+  return {kind:'num',ans:BC,tol:.01,prompt:base+` <b>Find ${Y}${Z}</b> (the length, not just x).`,svg,hint:hint+` Then plug x into ${Y}${Z}. Before you answer, reread what the question asks for.`,
+    traps:[{v:x,k:'stopped at x',msg:`That’s x. You’re one step away: plug x = ${x} into ${Y}${Z} = ${lin(r,s)}.`},{v:AB,k:'found the wrong piece',msg:`That’s ${X}${Y}. The question asks for ${Y}${Z}.`}],
+    steps:[...steps,`${Y}${Z} = ${lin(r,s).replace('x','('+x+')')} = ${BC}`]};
+}
+function g14a(){
+  let a,b; do{a=ri(-12,6);b=ri(-6,14);}while(b-a<2);
+  const [A,B]=pick([['P','Q'],['A','B'],['M','N']]); const swap=Math.random()<.5;
+  const traps=[];
+  if(a<0&&b>0) traps.push({v:Math.abs(a+b),k:'sign error with a negative',msg:`Careful with the negative. Distance = |${fmtN(b)} − (${fmtN(a)})|, and subtracting a negative means adding: ${fmtN(b)} + ${fmtN(-a)}.`});
+  return {kind:'num',ans:b-a,tol:.01,
+    prompt:`On a number line, ${A} is at ${fmtN(swap?b:a)} and ${B} is at ${fmtN(swap?a:b)}. What is the distance ${A}${B}?`,
+    svg:numLine(Math.min(a,0)-2,Math.max(b,0)+2,[{v:swap?b:a,label:A},{v:swap?a:b,label:B}]),
+    traps,hint:'Distance on a number line = |one coordinate − the other|. You can also count the units between them.',
+    steps:[`${A}${B} = |${fmtN(swap?b:a)} − ${sq(swap?a:b)}|`,`= |${fmtN(swap?b-a:a-b)}| = ${b-a}`]};
+}
+function g14b(){
+  const triples=[[3,4,5],[6,8,10],[5,12,13],[8,15,17],[9,12,15]];
+  let dx,dy,exact=Math.random()<.65;
+  if(exact){const t=pick(triples);[dx,dy]=Math.random()<.5?[t[0],t[1]]:[t[1],t[0]];}else{do{dx=ri(1,7);dy=ri(1,7);}while(Number.isInteger(Math.hypot(dx,dy)));}
+  dx*=pick([1,-1]);dy*=pick([1,-1]);
+  const x1=ri(-6,6),y1=ri(-6,6),x2=x1+dx,y2=y1+dy,d=Math.hypot(dx,dy);
+  const s=dx*dx+dy*dy;
+  const traps=[{v:Math.abs(dx)+Math.abs(dy),k:'added Δx + Δy (no squaring)',msg:'It looks like you added the horizontal and vertical distances. Distance is the hypotenuse: square them, add, then take the square root.'},{v:s,k:'forgot the square root',msg:`You’re almost there. You found Δx² + Δy² = ${s}. Now take the square root.`}];
+  const ds=Math.hypot(x1+x2,y1+y2); if(Math.abs(ds-d)>.2) traps.push({v:ds,k:'added coordinates instead of subtracting',msg:'It looks like you added the coordinates. Distance uses the <i>difference</i>: x₂ − x₁ and y₂ − y₁.'});
+  return {kind:'num',ans:d,tol:exact?.01:.051,
+    prompt:`Find the distance between ${P(x1,y1)} and ${P(x2,y2)}.${exact?'':' Round to the nearest tenth.'}`,
+    traps,hint:'d = √((x₂ − x₁)² + (y₂ − y₁)²). Find the change in x and the change in y first.',
+    steps:[`Δx = ${fmtN(x2)} − ${sq(x1)} = ${fmtN(dx)},  Δy = ${fmtN(y2)} − ${sq(y1)} = ${fmtN(dy)}`,`d = √(${sq(dx)}² + ${sq(dy)}²) = √(${dx*dx} + ${dy*dy}) = √${s}`,`d = ${exact?fmtN(d):'≈ '+d.toFixed(1)}`]};
+}
+
+function gridTri(x1,y1,x2,y2){
+  const lo=Math.min(x1,x2,y1,y2,0)-1,hi=Math.max(x1,x2,y1,y2,0)+1,n=hi-lo,S=Math.min(26,300/n),W=n*S+40,X=v=>20+(v-lo)*S,Y=v=>20+(hi-v)*S;
+  let g='';for(let v=lo;v<=hi;v++){g+=`<line x1="${X(v)}" y1="${Y(lo)}" x2="${X(v)}" y2="${Y(hi)}" stroke="${v===0?'#1f2a37':'#e3ded3'}" stroke-width="${v===0?1.5:1}"/><line x1="${X(lo)}" y1="${Y(v)}" x2="${X(hi)}" y2="${Y(v)}" stroke="${v===0?'#1f2a37':'#e3ded3'}" stroke-width="${v===0?1.5:1}"/>`;}
+  const tri=`<line x1="${X(x1)}" y1="${Y(y1)}" x2="${X(x2)}" y2="${Y(y1)}" stroke="#e07a3f" stroke-width="3" stroke-dasharray="6 4"/><line x1="${X(x2)}" y1="${Y(y1)}" x2="${X(x2)}" y2="${Y(y2)}" stroke="#2e8b57" stroke-width="3" stroke-dasharray="6 4"/><line x1="${X(x1)}" y1="${Y(y1)}" x2="${X(x2)}" y2="${Y(y2)}" stroke="#2f5d8a" stroke-width="3"/>`;
+  const pts=[[x1,y1,'A'],[x2,y2,'B']].map(([x,y,l])=>`<circle cx="${X(x)}" cy="${Y(y)}" r="5" fill="#2f5d8a"/><text x="${X(x)+7}" y="${Y(y)-7}" font-weight="700">${l}</text>`).join('');
+  return `<svg viewBox="0 0 ${W} ${W}" width="${Math.min(W,340)}" style="max-width:100%">${g}${tri}${pts}<text x="${(X(x1)+X(x2))/2}" y="${Y(y1)+(y2>y1?16:-6)}" text-anchor="middle" fill="#e07a3f" font-weight="700">across</text><text x="${X(x2)+6}" y="${(Y(y1)+Y(y2))/2}" fill="#2e8b57" font-weight="700">up/down</text></svg>`;
+}
+function g14c(){
+  const t=pick([[3,4,5],[6,8,10],[5,12,13],[4,3,5],[8,6,10]]);let [dx,dy]=t;dx*=pick([1,-1]);dy*=pick([1,-1]);
+  if(Math.random()<.35){do{dx=ri(1,6)*pick([1,-1]);dy=ri(1,6)*pick([1,-1]);}while(Number.isInteger(Math.hypot(dx,dy)));}
+  const x1=ri(-4,3),y1=ri(-4,3),x2=x1+dx,y2=y1+dy,d=Math.hypot(dx,dy),exact=Number.isInteger(d),s2=dx*dx+dy*dy;
+  return {kind:'multi',prompt:`Find the distance from A${P(x1,y1)} to B${P(x2,y2)} one step at a time. The distance is the slanted side of the right triangle.${exact?'':' Round the distance to the nearest tenth.'}`,
+    svg:gridTri(x1,y1,x2,y2),
+    fields:[{label:'1. Across (orange): how far left/right?',ans:Math.abs(dx),tol:.01,abs:true,miss:`Subtract the x-coordinates: ${fmtN(x2)} − ${sq(x1)} = ${fmtN(dx)}, so the length is ${Math.abs(dx)}. You can also count the squares.`},
+            {label:'2. Up/down (green): how far?',ans:Math.abs(dy),tol:.01,abs:true,miss:`Subtract the y-coordinates: ${fmtN(y2)} − ${sq(y1)} = ${fmtN(dy)}, so the length is ${Math.abs(dy)}.`},
+            {label:`3. Slanted side (blue): use a² + b² = c²`,ans:d,tol:exact?.01:.051,miss:`Square each leg, add, then take the square root: √(${dx*dx} + ${dy*dy}) = √${s2}${exact?' = '+d:' ≈ '+d.toFixed(1)}.`,
+             traps:[{v:Math.abs(dx)+Math.abs(dy),msg:'You added the two legs. The slanted side is shorter than going across and then up, so use a² + b² = c².'},{v:s2,msg:`You have c² = ${s2}. Take the square root to get c.`}]}],
+    hint:'Think of a right triangle: the two legs are “across” and “up/down,” and the distance is the hypotenuse.',
+    steps:[`Across = |${fmtN(x2)} − ${sq(x1)}| = ${Math.abs(dx)}`,`Up/down = |${fmtN(y2)} − ${sq(y1)}| = ${Math.abs(dy)}`,`c² = ${Math.abs(dx)}² + ${Math.abs(dy)}² = ${dx*dx} + ${dy*dy} = ${s2}`,`c = √${s2} ${exact?'= '+d:'≈ '+d.toFixed(1)}`]};
+}
+const RATIOS=[[1,1],[1,2],[2,1],[1,3],[3,1],[2,3],[3,2],[1,4]];
+function fracPick(){ const [m,n]=pick(RATIOS); return {m,n,num:m,den:m+n}; }
+function g15(){
+  const f=fracPick(), ratio=Math.random()<.4;
+  const span=f.den*ri(1,4)*pick([1,1,-1]), a=ri(-10,6), b=a+span, ans=a+span*f.num/f.den;
+  const ask=ratio?`Point P partitions segment AB in the ratio ${f.m}:${f.n} (from A to B).`:`Point P is <b>${frac(f.num,f.den)}</b> of the way from A to B.`;
+  const traps=[{v:span*f.num/f.den,k:'forgot to start at A',msg:`You found how far P is <i>from A</i> (${fmtN(span*f.num/f.den)}). Now add that to A’s coordinate.`},{v:b-span*f.num/f.den,k:'measured from B instead of A',msg:'It looks like you measured from B. “Of the way from A to B” means start at A.'}];
+  if(ratio&&f.n!==0) traps.push({v:a+span*f.m/f.n,k:'used m/n instead of m/(m+n)',msg:`A ratio of ${f.m}:${f.n} splits the segment into ${f.m+f.n} equal parts, so P is ${f.m}/${f.m+f.n} of the way, not ${f.m}/${f.n}.`});
+  const lo=Math.min(a,b)-2,hi=Math.max(a,b)+2;
+  return {kind:'num',ans,tol:.01,prompt:`On a number line, A = ${fmtN(a)} and B = ${fmtN(b)}. ${ask} Find the coordinate of P.`,
+    svg:numLine(lo,hi,[{v:a,label:'A'},{v:b,label:'B'}]),traps,
+    hint:(ratio?`Ratio ${f.m}:${f.n} means ${f.m}/${f.m+f.n} of the way. `:'')+'P = A + fraction × (B − A).',
+    steps:[...(ratio?[`${f.m}:${f.n} → ${f.m} out of ${f.m+f.n} parts → k = ${frac(f.num,f.den)}`]:[]),`B − A = ${fmtN(b)} − ${sq(a)} = ${fmtN(span)}`,`P = ${fmtN(a)} + ${frac(f.num,f.den)} × ${sq(span)} = ${fmtN(a)} + ${sq(span*f.num/f.den)} = ${fmtN(ans)}`]};
+}
+function g16(){
+  const f=fracPick(), ratio=Math.random()<.35; let kx,ky; do{kx=ri(-3,3);ky=ri(-3,3);}while(kx===0&&ky===0);
+  const dx=f.den*kx,dy=f.den*ky,x1=ri(-6,6),y1=ri(-6,6),x2=x1+dx,y2=y1+dy;
+  const k=f.num/f.den,ans=[x1+k*dx,y1+k*dy];
+  const ask=ratio?`P partitions the directed segment from A to B in the ratio ${f.m}:${f.n}.`:`P is <b>${frac(f.num,f.den)}</b> of the way from A to B.`;
+  const traps=[{v:[k*dx,k*dy],k:'forgot to start at A',msg:'You found how far to move from A. Now add those amounts to A’s coordinates.'},{v:[x2-k*dx,y2-k*dy],k:'measured from B instead of A',msg:'It looks like you started at B. “From A to B” means start at A and move toward B.'}];
+  if(ratio) traps.push({v:[x1+dx*f.m/f.n,y1+dy*f.m/f.n],k:'used m/n instead of m/(m+n)',msg:`Ratio ${f.m}:${f.n} means ${f.m+f.n} equal parts, so k = ${f.m}/${f.m+f.n}.`});
+  return {kind:'pt',ans,tol:.01,prompt:`A = ${P(x1,y1)} and B = ${P(x2,y2)}. ${ask} Find the coordinates of P.`,traps,
+    hint:(ratio?`Ratio ${f.m}:${f.n} → k = ${f.m}/${f.m+f.n}. `:'')+'Do x and y separately: start value + k × change.',
+    steps:[...(ratio?[`k = ${frac(f.num,f.den)}`]:[]),`Change: Δx = ${fmtN(dx)}, Δy = ${fmtN(dy)}`,`x = ${fmtN(x1)} + ${frac(f.num,f.den)}(${fmtN(dx)}) = ${fmtN(ans[0])}`,`y = ${fmtN(y1)} + ${frac(f.num,f.den)}(${fmtN(dy)}) = ${fmtN(ans[1])}`,`P = ${P(ans[0],ans[1])}`]};
+}
+function g17a(){
+  const x1=ri(-9,9),y1=ri(-9,9);let x2,y2;do{x2=ri(-9,9);y2=ri(-9,9);}while(x2===x1&&y2===y1);
+  const ans=[(x1+x2)/2,(y1+y2)/2];
+  return {kind:'pt',ans,tol:.01,prompt:`Find the midpoint of the segment with endpoints ${P(x1,y1)} and ${P(x2,y2)}.`,
+    traps:[{v:[(x2-x1)/2,(y2-y1)/2],k:'subtracted instead of adding',msg:'It looks like you subtracted. The midpoint is the <i>average</i>: add the coordinates, then divide by 2.'},{v:[x1+x2,y1+y2],k:'forgot to divide by 2',msg:'You added correctly. Now divide each sum by 2.'}],
+    hint:'M = ((x₁ + x₂)/2, (y₁ + y₂)/2). Average the x’s, then average the y’s.',
+    steps:[`x = (${fmtN(x1)} + ${sq(x2)})/2 = ${fmtN(x1+x2)}/2 = ${fmtN(ans[0])}`,`y = (${fmtN(y1)} + ${sq(y2)})/2 = ${fmtN(y1+y2)}/2 = ${fmtN(ans[1])}`,`M = ${P(...ans)}`]};
+}
+function g17b(){
+  const ax=ri(-8,8),ay=ri(-8,8);let mx,my;do{mx=ri(-6,6);my=ri(-6,6);}while(mx===ax&&my===ay);
+  const ans=[2*mx-ax,2*my-ay];
+  return {kind:'pt',ans,tol:.01,prompt:`M = ${P(mx,my)} is the midpoint of segment AB. A = ${P(ax,ay)}. Find the coordinates of B.`,
+    traps:[{v:[(ax+mx)/2,(ay+my)/2],k:'averaged A and M',msg:'You averaged A and M, which gives a point between them. B is on the <i>other side</i> of M, the same distance away.'},{v:[mx-ax,my-ay],k:'stopped at the step size',msg:'That’s the step from A to M. Add that same step to M to land on B.'}],
+    hint:'Find the step from A to M (change in x and change in y), then take the same step again from M.',
+    steps:[`Step from A to M: Δx = ${fmtN(mx)} − ${sq(ax)} = ${fmtN(mx-ax)}, Δy = ${fmtN(my)} − ${sq(ay)} = ${fmtN(my-ay)}`,`B = (${fmtN(mx)} + ${sq(mx-ax)}, ${fmtN(my)} + ${sq(my-ay)}) = ${P(...ans)}`,`Check: midpoint of A and B = ${P((ax+ans[0])/2,(ay+ans[1])/2)} ✓`]};
+}
+function g17c(){
+  let x,p,r,q,s;do{x=ri(2,8);p=ri(1,6);r=ri(1,6);q=ri(-6,9);s=(p-r)*x+q;}while(p===r||p*x+q<=0||Math.abs(s)>20);
+  const AM=p*x+q,AB=2*AM;
+  const base=`M is the midpoint of segment AB. AM = ${lin(p,q)} and MB = ${lin(r,s)}.`;
+  const steps=[`Midpoint means AM = MB`,`${lin(p,q)} = ${lin(r,s)}`,`${lin(p-r,0)} = ${fmtN(s-q)}`,`x = ${x}`];
+  if(Math.random()<.5) return {kind:'num',ans:x,tol:.01,prompt:base+' Find x.',hint:'A midpoint splits the segment into two equal halves, so set AM = MB.',steps,
+    traps:[{v:-x,k:'sign error moving terms',msg:'Check your signs when you move terms across the equals sign.'}]};
+  return {kind:'num',ans:AB,tol:.01,prompt:base+' <b>Find AB</b> (the whole segment, not just x).',hint:'Set AM = MB to find x. Then AB = AM + MB = 2 × AM.',
+    steps:[...steps,`AM = ${AM}, so AB = 2 × ${AM} = ${AB}`],
+    traps:[{v:AM,k:'found half the segment',msg:`That’s AM, only half of AB. Double it.`},{v:x,k:'stopped at x',msg:'That’s x. Plug it in to find AM, then double it for AB.'}]};
+}
+/* probability */
+function bag(){const r=ri(2,8),b=ri(2,8),g=ri(1,6);return {r,b,g,n:r+b+g};}
+function g_p1(){
+  const {r,b,g,n}=bag(); const v=ri(0,2);
+  const intro=`A bag has ${r} red, ${b} blue, and ${g} green marbles. One marble is picked at random.`;
+  const hintF='Enter a fraction like 3/8 (or a decimal).';
+  if(v===0) return {kind:'num',ans:r/n,tol:.0051,prompt:intro+' What is P(red)?',hint:'P = favorable ÷ total. '+hintF,
+    traps:[{v:r/(n-r),k:'wrong denominator',msg:'The denominator should be ALL the marbles, not just the non-red ones.'}],steps:[`Total = ${r} + ${b} + ${g} = ${n}`,`P(red) = ${r}/${n}${gcd(r,n)>1?' = '+frac(r,n):''}`]};
+  if(v===1) return {kind:'num',ans:(n-r)/n,tol:.0051,prompt:intro+' What is P(<b>not</b> red)?',hint:'P(not A) = 1 − P(A). '+hintF,
+    traps:[{v:r/n,k:'gave P(event) instead of complement',msg:'That’s P(red). “Not red” is everything else: 1 − P(red).'},{v:r/(n-r),k:'wrong denominator',msg:'The denominator is all the marbles.'}],steps:[`P(red) = ${r}/${n}`,`P(not red) = 1 − ${r}/${n} = ${frac(n-r,n)}`]};
+  return {kind:'num',ans:(r+b)/n,tol:.0051,prompt:intro+' What is P(red <b>or</b> blue)?',hint:'These can’t happen at the same time, so add their probabilities. '+hintF,
+    traps:[{v:r*b/(n*n),k:'multiplied for OR',msg:'You multiplied. For “or” with events that can’t overlap, <i>add</i>.'}],steps:[`P(red or blue) = ${r}/${n} + ${b}/${n} = ${frac(r+b,n)}`]};
+}
+function g_p2(){
+  const {r,b,g,n}=bag(); const v=ri(0,2);
+  const intro=`A bag has ${r} red, ${b} blue, and ${g} green marbles.`;
+  if(v===0) return {kind:'num',ans:r*b/(n*n),tol:.0051,prompt:intro+` You pick a marble, put it <b>back</b>, then pick again. What is P(red, then blue)?`,
+    hint:'With replacement, the picks are independent: multiply P(red) × P(blue).',
+    traps:[{v:(r+b)/n,k:'added for AND',msg:'For “first AND second,” multiply the probabilities instead of adding.'},{v:r*b/(n*(n-1)),k:'treated as without replacement',msg:'The marble goes back in, so the total stays the same for the second pick.'}],
+    steps:[`P(red) = ${r}/${n}, P(blue) = ${b}/${n}`,`P = ${r}/${n} × ${b}/${n} = ${r*b}/${n*n}${gcd(r*b,n*n)>1?' = '+frac(r*b,n*n):''}`]};
+  if(v===1) return {kind:'num',ans:r*b/(n*(n-1)),tol:.0051,prompt:intro+` You pick one marble and <b>keep it</b>, then pick another. What is P(red, then blue)?`,
+    hint:'Without replacement, the second pick has one fewer marble in the bag.',
+    traps:[{v:r*b/(n*n),k:'forgot the bag shrinks',msg:`You didn’t put the first marble back, so the second pick is out of ${n-1}, not ${n}.`},{v:(r+b)/n,k:'added for AND',msg:'For “first AND second,” multiply.'}],
+    steps:[`First: P(red) = ${r}/${n}`,`Second (one fewer marble): P(blue) = ${b}/${n-1}`,`P = ${r}/${n} × ${b}/${n-1} = ${frac(r*b,n*(n-1))}`]};
+  return {kind:'num',ans:r*(r-1)/(n*(n-1)),tol:.0051,prompt:intro+` You pick two marbles <b>without replacement</b>. What is P(both red)?`,
+    hint:'After the first red is taken out, there is one less red AND one less marble total.',
+    traps:[{v:r*r/(n*n),k:'forgot the bag shrinks',msg:'Without replacement, both the number of reds and the total drop by 1 for the second pick.'},{v:r*(r-1)/(n*n),k:'only reduced the reds',msg:'You reduced the reds, but the total also drops by 1.'}],
+    steps:[`P(1st red) = ${r}/${n}`,`P(2nd red) = ${r-1}/${n-1}`,`P = ${frac(r*(r-1),n*(n-1))}`]};
+}
+function g_p3(){
+  const a=ri(3,15),b=ri(3,15),c=ri(3,15),d=ri(3,15),N=a+b+c+d,S=a+b,Pt=a+c;
+  const table=`<table class="tw"><tr><th></th><th>Has a pet</th><th>No pet</th><th>Total</th></tr><tr><th>Plays a sport</th><td>${a}</td><td>${b}</td><td>${S}</td></tr><tr><th>No sport</th><td>${c}</td><td>${d}</td><td>${c+d}</td></tr><tr><th>Total</th><td>${Pt}</td><td>${b+d}</td><td>${N}</td></tr></table>`;
+  const intro=`The table shows ${N} students. One student is chosen at random.`; const v=ri(0,2);
+  if(v===0) return {kind:'num',ans:(a+b+c)/N,tol:.0051,prompt:intro+' What is P(plays a sport <b>or</b> has a pet)?',svg:table,
+    hint:'P(A or B) = P(A) + P(B) − P(A and B). Don’t count the overlap twice.',
+    traps:[{v:(S+Pt)/N,k:'double-counted the overlap',msg:`You counted the ${a} students who do both twice. Subtract the overlap once.`}],
+    steps:[`P(sport) + P(pet) − P(both) = ${S}/${N} + ${Pt}/${N} − ${a}/${N}`,`= ${a+b+c}/${N}${gcd(a+b+c,N)>1?' = '+frac(a+b+c,N):''}`]};
+  if(v===1) return {kind:'num',ans:a/S,tol:.0051,prompt:intro+' <b>Given</b> that the student plays a sport, what is the probability they have a pet?',svg:table,
+    hint:'“Given” shrinks the group: only look at the “Plays a sport” row.',
+    traps:[{v:a/N,k:'used whole group for “given”',msg:'“Given they play a sport” means the denominator is only the sport players, not all students.'},{v:a/Pt,k:'flipped the condition',msg:'That’s P(sport | pet). Here the condition is “plays a sport,” so divide by the sport total.'}],
+    steps:[`Only sport players: ${S}`,`Of those, with a pet: ${a}`,`P = ${a}/${S}${gcd(a,S)>1?' = '+frac(a,S):''}`]};
+  return {kind:'num',ans:a/N,tol:.0051,prompt:intro+' What is P(plays a sport <b>and</b> has a pet)?',svg:table,
+    hint:'Find the cell where both are true, out of everyone.',
+    traps:[{v:a/S,k:'used a row total for “and”',msg:'That’s a conditional (“given”) probability. For “and,” divide by ALL students.'},{v:(S+Pt)/N,k:'added for AND',msg:'You added the groups. “And” means the students in BOTH, which is one cell.'}],
+    steps:[`Both: ${a} students`,`P = ${a}/${N}${gcd(a,N)>1?' = '+frac(a,N):''}`]};
+}
+
+/* ---------- angles (Unit 2B) & logic/lines (Unit 3B) ---------- */
+function angleDiagram(L,a,b,txt){
+  const cx=160,cy=165,R=125,toXY=d=>[cx+R*Math.cos(d*Math.PI/180),cy-R*Math.sin(d*Math.PI/180)];
+  const s=Math.min(150,Math.max(70,a+b))/(a+b);
+  const pts=[[L[0],0],[L[1],b*s],[L[2],(a+b)*s]];
+  const rays=pts.map(([l,d])=>{const [x,y]=toXY(d);const [lx,ly]=[cx+(R+14)*Math.cos(d*Math.PI/180),cy-(R+14)*Math.sin(d*Math.PI/180)];return `<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="#1f2a37" stroke-width="2"/><circle cx="${x}" cy="${y}" r="4" fill="#2f5d8a"/><text x="${lx}" y="${ly+5}" text-anchor="middle" font-weight="600">${l}</text>`;}).join('');
+  const lab=(d,t)=>{const r=70;return `<text x="${cx+r*Math.cos(d*Math.PI/180)}" y="${cy-r*Math.sin(d*Math.PI/180)+5}" text-anchor="middle" fill="#e07a3f" font-weight="600" font-size="14">${t}</text>`;};
+  return `<svg viewBox="0 0 330 195" width="330" style="max-width:100%">${rays}<text x="${cx-5}" y="${cy+22}" font-weight="600">${L[3]}</text>${lab(b*s/2,txt[1])}${lab(b*s+a*s/2,txt[0])}</svg>`;
+}
+function g_a1(){
+  const v=ri(0,2);
+  if(v<2){
+    const a=ri(15,80),b=ri(15,80),whole=v===0;
+    return {kind:'num',ans:whole?a+b:a,tol:.01,
+      prompt:whole?`Point D is in the interior of ∠ABC. m∠ABD = ${a}° and m∠DBC = ${b}°. Find m∠ABC.`:`Point D is in the interior of ∠ABC. m∠ABC = ${a+b}° and m∠DBC = ${b}°. Find m∠ABD.`,
+      svg:angleDiagram(['C','D','A','B'],a,b,whole?[a+'°',b+'°']:['?',b+'°']),
+      traps:whole?[{v:Math.abs(a-b),k:'subtracted parts instead of adding',msg:'The two smaller angles add up to the whole angle (Angle Addition Postulate).'}]:[{v:2*b+a,k:'added whole + part',msg:'m∠ABC is the whole. Subtract the part you know.'}],
+      hint:'Angle Addition Postulate: m∠ABD + m∠DBC = m∠ABC.',
+      steps:whole?[`m∠ABD + m∠DBC = m∠ABC`,`${a}° + ${b}° = ${a+b}°`]:[`m∠ABD = m∠ABC − m∠DBC`,`= ${a+b}° − ${b}° = ${a}°`]};
+  }
+  let x,p,r,q,s;do{x=ri(4,15);p=ri(1,5);r=ri(1,5);q=ri(-10,15);s=ri(-10,15);}while(p*x+q<10||r*x+s<10||(p+r)*x+q+s>175||p===r);
+  const t=(p+r)*x+q+s;
+  return {kind:'num',ans:x,tol:.01,prompt:`D is in the interior of ∠ABC. m∠ABD = (${lin(p,q)})°, m∠DBC = (${lin(r,s)})°, and m∠ABC = ${t}°. Find x.`,
+    svg:angleDiagram(['C','D','A','B'],p*x+q,r*x+s,[`(${lin(p,q)})°`,`(${lin(r,s)})°`]),
+    traps:[{v:(s-q)/(p-r),k:'set the two parts equal',msg:'The parts are only equal if BD is a bisector. Here they <i>add</i> to the whole angle.'}],
+    hint:'Write m∠ABD + m∠DBC = m∠ABC, then solve for x.',
+    steps:[`(${lin(p,q)}) + (${lin(r,s)}) = ${t}`,`${lin(p+r,q+s)} = ${t}`,`${p+r}x = ${t-q-s}`,`x = ${x}`]};
+}
+function g_a2(){
+  const v=ri(0,2);
+  if(v===0){const a=ri(5,85),sup=Math.random()<.5;const w=sup?'supplement':'complement',T=sup?180:90;
+    return {kind:'num',ans:T-a,tol:.01,prompt:`An angle measures ${a}°. What is the measure of its <b>${w}</b>?`,
+      traps:[{v:(sup?90:180)-a,k:'mixed up complementary/supplementary',msg:`Mix-up: complementary angles add to <b>90°</b>; supplementary angles add to <b>180°</b>.`}],
+      hint:'Complementary → 90° (“C” comes before “S”, and 90 before 180). Supplementary → 180°.',steps:[`${T}° − ${a}° = ${T-a}°`]};}
+  const sup=v===2,T=sup?180:90;let x,p,r,q,s;do{x=ri(3,20);p=ri(1,6);r=ri(1,6);q=ri(-10,20);s=T-(p+r)*x-q;}while(p*x+q<5||r*x+s<5||Math.abs(s)>40);
+  return {kind:'num',ans:x,tol:.01,prompt:`∠1 and ∠2 are <b>${sup?'supplementary':'complementary'}</b>. m∠1 = (${lin(p,q)})° and m∠2 = (${lin(r,s)})°. Find x.`,
+    traps:[{v:((sup?90:180)-q-s)/(p+r),k:'mixed up complementary/supplementary',msg:`Mix-up: ${sup?'supplementary angles add to 180°':'complementary angles add to 90°'}.`},{v:(s-q)/(p-r),k:'set angles equal instead of adding',msg:`${sup?'Supplementary':'Complementary'} angles <i>add</i> to ${T}°; they aren’t necessarily equal.`}],
+    hint:`Add the two angles and set the sum equal to ${T}.`,steps:[`(${lin(p,q)}) + (${lin(r,s)}) = ${T}`,`${lin(p+r,q+s)} = ${T}`,`x = ${x}`]};
+}
+const crossFig=`<svg viewBox="0 0 240 170" width="240" style="max-width:100%"><line x1="10" y1="85" x2="230" y2="85" stroke="#1f2a37" stroke-width="2"/><line x1="70" y1="160" x2="170" y2="10" stroke="#1f2a37" stroke-width="2"/>${[[150,74,'1'],[95,72,'2'],[90,104,'3'],[148,104,'4']].map(([x,y,t])=>`<text x="${x}" y="${y}" font-weight="700" fill="#e07a3f">${t}</text>`).join('')}</svg>`;
+function g_a3(){
+  const v=ri(0,2);
+  if(v===0){const a=ri(30,150);const askV=Math.random()<.5;
+    return {kind:'num',ans:askV?a:180-a,tol:.01,prompt:`In the figure, two lines intersect. m∠1 = ${a}°. Find m∠${askV?3:2}.`,svg:crossFig,
+      traps:[{v:askV?180-a:a,k:askV?'used linear pair instead of vertical angles':'used vertical angles instead of linear pair',msg:askV?'∠1 and ∠3 are <b>vertical angles</b> (across from each other), so they’re equal.':'∠1 and ∠2 are a <b>linear pair</b> (side by side on a line), so they add to 180°.'}],
+      hint:'Across from each other → vertical angles → equal. Side by side on a straight line → linear pair → add to 180°.',
+      steps:[askV?`∠1 and ∠3 are vertical angles → m∠3 = m∠1 = ${a}°`:`∠1 and ∠2 form a linear pair → m∠2 = 180° − ${a}° = ${180-a}°`]};}
+  const vert=v===1;let x,p,r,q,s;
+  if(vert){do{x=ri(3,20);p=ri(2,7);r=ri(1,6);q=ri(-15,20);s=(p-r)*x+q;}while(p===r||p*x+q<15||p*x+q>165||Math.abs(s)>40);}
+  else{do{x=ri(3,20);p=ri(1,6);r=ri(1,6);q=ri(-10,25);s=180-(p+r)*x-q;}while(p*x+q<15||r*x+s<15||Math.abs(s)>60);}
+  return {kind:'num',ans:x,tol:.01,prompt:`In the figure, m∠1 = (${lin(p,q)})° and m∠${vert?3:2} = (${lin(r,s)})°. Find x.`,svg:crossFig,
+    traps:vert?[{v:(180-q-s)/(p+r),k:'used linear pair instead of vertical angles',msg:'∠1 and ∠3 are vertical angles, so set them <b>equal</b> (they don’t add to 180°).'}]:[{v:(s-q)/(p-r),k:'used vertical angles instead of linear pair',msg:'∠1 and ∠2 are a linear pair, so they <b>add to 180°</b>. They aren’t equal.'}],
+    hint:vert?'Vertical angles are congruent: set the expressions equal.':'A linear pair adds to 180°.',
+    steps:vert?[`${lin(p,q)} = ${lin(r,s)}`,`${lin(p-r,0)} = ${fmtN(s-q)}`,`x = ${x}`]:[`(${lin(p,q)}) + (${lin(r,s)}) = 180`,`${lin(p+r,q+s)} = 180`,`x = ${x}`]};
+}
+function g_a4(){
+  let x,p,r,q,s;do{x=ri(3,15);p=ri(1,6);r=ri(1,6);q=ri(-10,20);s=(p-r)*x+q;}while(p===r||p*x+q<10||p*x+q>85||Math.abs(s)>40);
+  const half=p*x+q,askX=Math.random()<.4;
+  return {kind:'num',ans:askX?x:2*half,tol:.01,prompt:`Ray BD bisects ∠ABC. m∠ABD = (${lin(p,q)})° and m∠DBC = (${lin(r,s)})°. Find ${askX?'x':'m∠ABC'}.`,
+    svg:angleDiagram(['C','D','A','B'],half,half,[`(${lin(p,q)})°`,`(${lin(r,s)})°`]),
+    traps:askX?[]:[{v:half,k:'found half the angle',msg:'That’s m∠ABD, only half. The whole angle is twice as big.'},{v:x,k:'stopped at x',msg:'That’s x. Plug it in, then double.'}],
+    hint:'A bisector splits the angle into two equal angles: set them equal, solve, then double for the whole angle.',
+    steps:[`${lin(p,q)} = ${lin(r,s)}`,`x = ${x}`,...(askX?[]:[`m∠ABD = ${half}°, so m∠ABC = 2 × ${half}° = ${2*half}°`])]};
+}
+const COND=[['two angles are vertical angles','they are congruent','two angles are not vertical angles','they are not congruent'],['a number is divisible by 4','it is even','a number is not divisible by 4','it is not even'],['you live in Greenville','you live in South Carolina','you don’t live in Greenville','you don’t live in South Carolina'],['an angle is a right angle','it measures 90°','an angle is not a right angle','it does not measure 90°'],['a polygon is a triangle','it has three sides','a polygon is not a triangle','it does not have three sides']];
+function g_c1(){
+  const [p,q,np,nq]=pick(COND),cap=s=>s[0].toUpperCase()+s.slice(1);
+  const forms={converse:`If ${q}, then ${p}.`,inverse:`If ${np}, then ${nq}.`,contrapositive:`If ${nq}, then ${np}.`};
+  const what={converse:'switch the hypothesis and conclusion',inverse:'negate (add “not” to) both parts',contrapositive:'switch AND negate both parts'};
+  if(Math.random()<.2) return {kind:'mc',prompt:`Which statement is <b>always</b> true when “If ${p}, then ${q}” is true?`,options:shuffle([{t:'its contrapositive',ok:true,fb:'Right. A statement and its contrapositive are logically equivalent.'},{t:'its converse',ok:false,fb:'Not always. Example: “If you live in Greenville, then you live in SC” is true, but the converse is false.'},{t:'its inverse',ok:false,fb:'Not always. The inverse has the same truth value as the converse, not the original.'},{t:'none of them',ok:false,fb:'The contrapositive always matches the original statement’s truth value.'}]),hint:'Only one related statement is logically equivalent to the original.'};
+  const ask=pick(['converse','inverse','contrapositive']);
+  const opts=Object.entries(forms).map(([k,t])=>({t,ok:k===ask,fb:k===ask?`Yes. To get the ${ask}, ${what[ask]}.`:`That’s the <b>${k}</b> (${what[k]}). The ${ask}: ${what[ask]}.`}));
+  opts.push({t:`If ${p}, then ${nq}.`,ok:false,fb:`That only negates the conclusion. It isn’t one of the related conditionals. The ${ask}: ${what[ask]}.`});
+  return {kind:'mc',prompt:`Statement: “If ${p}, then ${q}.”<br>Which is its <b>${ask}</b>?`,options:shuffle(opts),hint:'Converse = switch. Inverse = negate both. Contrapositive = switch and negate.'};
+}
+const parFig=`<svg viewBox="0 0 320 210" width="320" style="max-width:100%"><line x1="10" y1="60" x2="310" y2="60" stroke="#1f2a37" stroke-width="2"/><line x1="10" y1="150" x2="310" y2="150" stroke="#1f2a37" stroke-width="2"/><line x1="90" y1="0" x2="230" y2="210" stroke="#1f2a37" stroke-width="2"/><text x="296" y="52" font-style="italic">m</text><text x="296" y="142" font-style="italic">n</text><text x="226" y="200" font-style="italic">t</text>${[[100,52,'1'],[140,52,'2'],[118,78,'3'],[158,78,'4'],[160,142,'5'],[200,142,'6'],[178,168,'7'],[218,168,'8']].map(([x,y,t])=>`<text x="${x}" y="${y}" font-weight="700" fill="#e07a3f">${t}</text>`).join('')}</svg>`;
+const ACUTE=[1,4,5,8];
+const PAIRNAME=(a,b)=>{const s=[a,b].sort().join('');return ({'15':'corresponding','26':'corresponding','37':'corresponding','48':'corresponding','36':'alternate interior','45':'alternate interior','18':'alternate exterior','27':'alternate exterior','35':'same-side interior','46':'same-side interior','14':'vertical','23':'vertical','58':'vertical','67':'vertical','12':'a linear pair','34':'a linear pair','13':'a linear pair','24':'a linear pair','56':'a linear pair','78':'a linear pair','57':'a linear pair','68':'a linear pair'})[s]||'not a named pair';};
+function g_c2(){
+  const pairs=[[1,5],[2,6],[3,7],[4,8],[3,6],[4,5],[1,8],[2,7],[3,5],[4,6]];
+  const [g,k]=shuffle(pick(pairs));const sameSet=ACUTE.includes(g)===ACUTE.includes(k);
+  if(Math.random()<.6){const a=ACUTE.includes(g)?ri(35,80):ri(100,145);const ans=sameSet?a:180-a;
+    return {kind:'num',ans,tol:.01,prompt:`Lines m and n are parallel, cut by transversal t. m∠${g} = ${a}°. Find m∠${k}.`,svg:parFig,
+      traps:[{v:sameSet?180-a:a,k:'congruent vs. supplementary mix-up',msg:sameSet?`∠${g} and ∠${k} are ${PAIRNAME(g,k)} angles, so they’re <b>congruent</b>.`:`∠${g} and ∠${k} are ${PAIRNAME(g,k)} angles, so they’re <b>supplementary</b> (add to 180°).`}],
+      hint:'With parallel lines, the small (acute) angles are all equal, the big (obtuse) angles are all equal, and a small + a big = 180°.',
+      steps:[`∠${g} and ∠${k} are ${PAIRNAME(g,k)} angles`,sameSet?`→ congruent: m∠${k} = ${a}°`:`→ supplementary: m∠${k} = 180° − ${a}° = ${ans}°`]};}
+  let x,p,r,q,s;
+  if(sameSet){do{x=ri(3,18);p=ri(2,7);r=ri(1,6);q=ri(-15,25);s=(p-r)*x+q;}while(p===r||p*x+q<30||p*x+q>150||Math.abs(s)>45);}
+  else{do{x=ri(3,18);p=ri(1,6);r=ri(1,6);q=ri(-10,30);s=180-(p+r)*x-q;}while(p*x+q<30||r*x+s<30||Math.abs(s)>60);}
+  return {kind:'num',ans:x,tol:.01,prompt:`Lines m and n are parallel. m∠${g} = (${lin(p,q)})° and m∠${k} = (${lin(r,s)})°. Find x.`,svg:parFig,
+    traps:sameSet?[{v:(180-q-s)/(p+r),k:'congruent vs. supplementary mix-up',msg:`These are ${PAIRNAME(g,k)} angles, so they’re congruent. Set them equal.`}]:[{v:(s-q)/(p-r),k:'congruent vs. supplementary mix-up',msg:`These are ${PAIRNAME(g,k)} angles, so they’re supplementary. Add them to 180.`}],
+    hint:`First name the pair: ∠${g} and ∠${k}. Is it congruent or supplementary?`,
+    steps:[`∠${g} and ∠${k}: ${PAIRNAME(g,k)} → ${sameSet?'congruent':'supplementary'}`,sameSet?`${lin(p,q)} = ${lin(r,s)}`:`(${lin(p,q)}) + (${lin(r,s)}) = 180`,`x = ${x}`]};
+}
+BANK.a5=[
+ {q:'An angle that measures 127° is…',o:[['obtuse',1,'Yes: between 90° and 180°.'],['acute',0,'Acute angles are less than 90°.'],['right',0,'Right angles are exactly 90°.'],['straight',0,'Straight angles are exactly 180°.']]},
+ {q:'Congruent angles have…',o:[['the same measure',1,'Correct.'],['measures that add to 90°',0,'That’s complementary.'],['measures that add to 180°',0,'That’s supplementary.'],['a common side',0,'That’s part of what makes angles adjacent.']]},
+ {q:'A polygon with 6 sides is a…',o:[['hexagon',1,'Right.'],['pentagon',0,'Pentagon = 5 sides.'],['heptagon',0,'Heptagon = 7 sides.'],['octagon',0,'Octagon = 8 sides.']]},
+ {q:'A <b>regular</b> polygon is…',o:[['both equilateral and equiangular',1,'Yes: all sides equal AND all angles equal.'],['any polygon with equal sides',0,'A rhombus has equal sides but isn’t regular unless its angles are equal too.'],['any convex polygon',0,'Convex isn’t enough; it needs equal sides and equal angles.'],['a polygon with 4 sides',0,'Regular has nothing to do with the number of sides.']]},
+ {q:'A polygon is <b>concave</b> if…',o:[['some line containing a side passes through its interior (it “caves in”)',1,'Right.'],['all its angles are less than 180°',0,'That describes a convex polygon.'],['it has curved sides',0,'Polygons never have curved sides.'],['it has more than 5 sides',0,'Number of sides doesn’t decide concave vs. convex.']]},
+ {q:'Two angles are <b>adjacent</b> if they…',o:[['share a vertex and a side but no interior points',1,'Correct.'],['add up to 90°',0,'That’s complementary. Adjacent is about position, not measure.'],['are across from each other at an intersection',0,'Those are vertical angles.'],['have the same measure',0,'That’s congruent.']]}
+];
+
+
+/* ---------- Module 2: 2-3 to 2-8 ---------- */
+function g_23(){
+  if(Math.random()<.5){const w=ri(2,12),h=ri(2,12),x=ri(-6,2),y=ri(-6,2),askP=Math.random()<.5;
+    const pts=[[x,y],[x+w,y],[x+w,y+h],[x,y+h]];
+    return {kind:'num',ans:askP?2*(w+h):w*h,tol:.01,prompt:`Rectangle ABCD has vertices A${P(...pts[0])}, B${P(...pts[1])}, C${P(...pts[2])}, and D${P(...pts[3])}. Find its <b>${askP?'perimeter':'area'}</b>.`,
+      traps:[{v:askP?w*h:2*(w+h),k:'mixed up perimeter and area',msg:askP?'That’s the area. Perimeter is the distance <i>around</i>: add all four sides.':'That’s the perimeter. Area is length × width.'},{v:w+h,k:'only added two sides',msg:'A rectangle has four sides: two lengths and two widths.'}],
+      hint:'Find the side lengths by counting along the grid: subtract the x’s for the horizontal side, and the y’s for the vertical side.',
+      steps:[`Width = ${fmtN(x+w)} − ${sq(x)} = ${w}, height = ${fmtN(y+h)} − ${sq(y)} = ${h}`,askP?`Perimeter = 2(${w} + ${h}) = ${2*(w+h)}`:`Area = ${w} × ${h} = ${w*h}`]};}
+  const t=pick([[3,4,5],[6,8,10],[5,12,13],[8,15,17]]);const [a,b,c]=t;const x=ri(-5,1),y=ri(-5,1),askP=Math.random()<.5;
+  return {kind:'num',ans:askP?a+b+c:a*b/2,tol:.01,prompt:`Triangle ABC has vertices A${P(x,y)}, B${P(x+a,y)}, and C${P(x,y+b)}. Find its <b>${askP?'perimeter':'area'}</b>.`,
+    traps:askP?[{v:a+b,k:'forgot the slanted side',msg:'You added the two straight sides. Use the distance formula (or the Pythagorean Theorem) to find the slanted side BC, then add all three.'},{v:a*b/2,k:'mixed up perimeter and area',msg:'That’s the area. Perimeter means add all three sides.'}]:[{v:a*b,k:'forgot ½ in triangle area',msg:'Triangle area = ½ × base × height. Don’t forget the ½.'},{v:a+b+c,k:'mixed up perimeter and area',msg:'That’s the perimeter. Area = ½ × base × height.'}],
+    hint:askP?'AB and AC are along grid lines. BC is slanted: use the distance formula.':'It’s a right triangle: area = ½ × base × height.',
+    steps:askP?[`AB = ${a}, AC = ${b}`,`BC = √(${a}² + ${b}²) = √${c*c} = ${c}`,`Perimeter = ${a} + ${b} + ${c} = ${a+b+c}`]:[`Base AB = ${a}, height AC = ${b}`,`Area = ½ × ${a} × ${b} = ${fmtN(a*b/2)}`]};
+}
+const TR=[
+ {n:'translated 〈a, b〉',f:(x,y,a,b)=>[x+a,y+b],t:(x,y,a,b)=>[[x-a,y-b,'moved the wrong direction','Add the translation numbers: (x + a, y + b).'],[x+b,y+a,'mixed up x and y shifts','The first number moves x (left/right); the second moves y (up/down).']],rule:'(x, y) → (x + a, y + b)'},
+ {n:'reflected across the <b>x-axis</b>',f:(x,y)=>[x,-y],t:(x,y)=>[[-x,y,'reflected across the wrong axis','That’s a reflection across the y-axis. Across the x-axis, x stays and y changes sign.']],rule:'(x, y) → (x, −y)'},
+ {n:'reflected across the <b>y-axis</b>',f:(x,y)=>[-x,y],t:(x,y)=>[[x,-y,'reflected across the wrong axis','That’s a reflection across the x-axis. Across the y-axis, y stays and x changes sign.']],rule:'(x, y) → (−x, y)'},
+ {n:'reflected across the line <b>y = x</b>',f:(x,y)=>[y,x],t:(x,y)=>[[-y,-x,'used y = −x instead of y = x','That’s across y = −x. Across y = x, just swap the coordinates.']],rule:'(x, y) → (y, x)'},
+ {n:'rotated <b>90° counterclockwise</b> about the origin',f:(x,y)=>[-y,x],t:(x,y)=>[[y,-x,'rotated the wrong direction','That’s 90° clockwise. Counterclockwise: (x, y) → (−y, x).']],rule:'(x, y) → (−y, x)'},
+ {n:'rotated <b>180°</b> about the origin',f:(x,y)=>[-x,-y],t:(x,y)=>[[-x,y,'only changed one sign','A 180° rotation changes the sign of BOTH coordinates.'],[x,-y,'only changed one sign','A 180° rotation changes the sign of BOTH coordinates.']],rule:'(x, y) → (−x, −y)'},
+ {n:'rotated <b>90° clockwise</b> about the origin',f:(x,y)=>[y,-x],t:(x,y)=>[[-y,x,'rotated the wrong direction','That’s counterclockwise. 90° clockwise: (x, y) → (y, −x).']],rule:'(x, y) → (y, −x)'}];
+function g_24(){
+  let x,y;do{x=ri(-8,8);y=ri(-8,8);}while(!x||!y||Math.abs(x)===Math.abs(y));
+  const T=pick(TR);let a=0,b=0;do{a=ri(-6,6);b=ri(-6,6);}while(!a||!b||a===b);
+  const ans=T.f(x,y,a,b);const name=T.n.replace('〈a, b〉',`${fmtN(a)} units ${a>0?'right':'left'} and ${fmtN(Math.abs(b))} units ${b>0?'up':'down'}`.replace(fmtN(a),fmtN(Math.abs(a))));
+  return {kind:'pt',ans,tol:.01,prompt:`Point A${P(x,y)} is ${name}. What are the coordinates of the image A′?`,
+    traps:T.t(x,y,a,b).map(([u,v,k,m])=>({v:[u,v],k,msg:m})),hint:`Rule: ${T.rule.replace('a',fmtN(a)).replace('b',fmtN(b))}`,
+    steps:[`Rule: ${T.rule}`,`A${P(x,y)} → A′${P(...ans)}`]};
+}
+const SOLIDS=[['triangular',3],['rectangular',4],['pentagonal',5],['hexagonal',6],['octagonal',8]];
+function g_25(){
+  const v=ri(0,2);
+  if(v===0){const [nm,n]=pick(SOLIDS),pyr=Math.random()<.5,what=pick(['faces','edges','vertices']);
+    const c=pyr?{faces:n+1,edges:2*n,vertices:n+1}:{faces:n+2,edges:3*n,vertices:2*n};const o=pyr?{faces:n+2,edges:3*n,vertices:2*n}:{faces:n+1,edges:2*n,vertices:n+1};
+    return {kind:'num',ans:c[what],tol:.01,prompt:`How many <b>${what}</b> does a ${nm} ${pyr?'pyramid':'prism'} have?`,
+      traps:[{v:o[what],k:'mixed up prism and pyramid',msg:pyr?'That count is for a prism (two bases). A pyramid has ONE base and a single top vertex.':'That count is for a pyramid. A prism has TWO matching bases.'}],
+      hint:`The base has ${n} sides. ${pyr?'A pyramid: 1 base + triangles meeting at one top point.':'A prism: 2 bases + a rectangle for each side of the base.'} Check with Euler: F + V = E + 2.`,
+      steps:[pyr?`Faces = ${n} + 1 = ${n+1}, Vertices = ${n} + 1 = ${n+1}, Edges = 2 × ${n} = ${2*n}`:`Faces = ${n} + 2 = ${n+2}, Vertices = 2 × ${n} = ${2*n}, Edges = 3 × ${n} = ${3*n}`,`Check: F + V = ${c.faces+c.vertices} = E + 2 ✓`]};}
+  if(v===1){const l=ri(2,12),w=ri(2,10),h=ri(2,10),askV=Math.random()<.5,V=l*w*h,SA=2*(l*w+l*h+w*h);
+    return {kind:'num',ans:askV?V:SA,tol:.01,prompt:`A rectangular prism is ${l} cm long, ${w} cm wide, and ${h} cm tall. Find its <b>${askV?'volume':'surface area'}</b>.`,
+      traps:askV?[{v:SA,k:'mixed up volume and surface area',msg:'That’s surface area. Volume = length × width × height.'}]:[{v:V,k:'mixed up volume and surface area',msg:'That’s volume. Surface area adds the areas of all 6 faces.'},{v:SA/2,k:'counted only 3 faces',msg:'Each face has a matching face on the opposite side. Double it.'}],
+      hint:askV?'V = l × w × h':'SA = 2(lw + lh + wh): three pairs of matching faces.',
+      steps:askV?[`V = ${l} × ${w} × ${h} = ${V} cm³`]:[`SA = 2(${l}·${w} + ${l}·${h} + ${w}·${h})`,`= 2(${l*w} + ${l*h} + ${w*h}) = ${SA} cm²`]};}
+  const r=ri(2,9),h=ri(2,12),V=Math.PI*r*r*h;
+  return {kind:'num',ans:V,tol:.6,prompt:`A cylinder has radius ${r} in. and height ${h} in. Find its volume. Round to the nearest whole number.`,
+    traps:[{v:Math.PI*2*r*h,k:'used 2πr instead of πr²',msg:'Volume uses the area of the circle base: πr², not the circumference 2πr.'},{v:Math.PI*r*h,k:'forgot to square the radius',msg:'Don’t forget to square the radius: πr²h.'},{v:Math.PI*4*r*r*h,k:'used the diameter as the radius',msg:'Use the radius, not the diameter.'}],
+    hint:'V = πr²h (area of the circle base × height).',steps:[`V = π × ${r}² × ${h} = π × ${r*r} × ${h} = ${r*r*h}π`,`≈ ${Math.round(V)} in³`]};
+}
+BANK.b26=[
+ {q:'A cube is sliced by a plane <b>parallel to one face</b>. What shape is the cross section?',o:[['square',1,'Right. It matches the face.'],['triangle',0,'A triangle comes from slicing off a corner.'],['rectangle that is not a square',0,'For a cube, a slice parallel to a face matches the face exactly: a square.'],['hexagon',0,'A hexagon is possible with a tilted slice through the middle, but not one parallel to a face.']]},
+ {q:'A cylinder is sliced <b>straight down</b> (perpendicular to its bases, through the center). The cross section is a…',o:[['rectangle',1,'Yes. Think of cutting a can of soup lengthwise.'],['circle',0,'A circle comes from slicing parallel to the bases.'],['oval',0,'An oval (ellipse) comes from a tilted slice.'],['triangle',0,'Triangles come from cones, not cylinders.']]},
+ {q:'A cone is sliced <b>parallel to its base</b>. The cross section is a…',o:[['circle',1,'Correct. It’s a smaller copy of the base.'],['triangle',0,'A triangle comes from slicing straight down through the tip.'],['rectangle',0,'Rectangles come from cylinders and prisms.'],['square',0,'A cone’s base is a circle, so parallel slices are circles.']]},
+ {q:'A <b>net</b> of a triangular prism is made of…',o:[['2 triangles and 3 rectangles',1,'Yes: 2 bases + 1 rectangle per side of the triangle.'],['1 triangle and 3 rectangles',0,'A prism has TWO triangle bases.'],['2 triangles and 2 rectangles',0,'A triangle has 3 sides, so there are 3 rectangles.'],['4 triangles',0,'That’s a net of a triangular pyramid.']]},
+ {q:'A net is…',o:[['a flat pattern that folds into a 3-D figure',1,'Right.'],['the view of a solid from the top',0,'That’s a top (orthographic) view.'],['a cross section of a solid',0,'A cross section is a slice, not an unfolded pattern.'],['the volume of a solid',0,'Nets show faces, not volume.']]},
+ {q:'A square pyramid is viewed from <b>directly above</b>. What does the top view look like?',o:[['a square with lines from each corner to the center',1,'Yes. You see the square base and the four edges meeting at the top.'],['a triangle',0,'A triangle is the front or side view.'],['a circle',0,'A circle would be a cone or cylinder from above.'],['just a point',0,'You’d see the whole square base from above.']]}
+];
+BANK.b27=[
+ {q:'<b>Precision</b> describes…',o:[['how fine the unit of measure is (how close repeated measurements are)',1,'Right. Smaller units → more precise.'],['how close a measurement is to the true value',0,'That’s accuracy.'],['how many objects were measured',0,'Precision is about the measuring unit.'],['whether the answer is correct',0,'That’s closer to accuracy.']]},
+ {q:'<b>Accuracy</b> describes…',o:[['how close a measurement is to the true (actual) value',1,'Correct.'],['how small the unit of measure is',0,'That’s precision.'],['how many digits are written',0,'Digits relate to precision and significant figures, not accuracy.'],['how fast the measurement was taken',0,'Speed doesn’t matter here.']]},
+ {q:'Which measurement is <b>most precise</b>?',o:[['4.35 m',1,'Yes. It’s measured to the nearest hundredth of a meter (1 cm).'],['4.4 m',0,'That’s to the nearest tenth. 4.35 m uses a smaller unit.'],['4 m',0,'That’s to the nearest meter, the least precise.'],['400 cm',0,'Written this way, it’s probably to the nearest hundred cm.']]},
+ {q:'A scale reads 2.000 kg every time, but the object really weighs 2.3 kg. The scale is…',o:[['precise but not accurate',1,'Exactly. Consistent and fine units, but off from the true value.'],['accurate but not precise',0,'It’s far from the true value, so it isn’t accurate.'],['both precise and accurate',0,'It’s 0.3 kg off, so not accurate.'],['neither',0,'It gives the same detailed reading each time, so it IS precise.']]},
+ {q:'Darts land tightly grouped, but far from the bullseye. This shows…',o:[['high precision, low accuracy',1,'Right. Close to each other, far from the target.'],['high accuracy, low precision',0,'Accuracy would mean near the bullseye.'],['high precision and high accuracy',0,'They miss the target, so accuracy is low.'],['low precision and low accuracy',0,'They’re tightly grouped, so precision is high.']]}
+];
+function g_27(){
+  const [u,unit]=pick([[1,'cm'],[0.1,'cm'],[0.5,'in.'],[0.25,'in.'],[1,'ft'],[0.01,'m']]);
+  const m=+(ri(8,60)*u).toFixed(2),askG=Math.random()<.5,ref=u===1?'nearest '+unit:`nearest ${fmtN(u)} ${unit}`;
+  if(askG) return {kind:'num',ans:u/2,tol:.0001,trapTol:.0001,prompt:`A length is measured as ${fmtN(m)} ${unit} to the ${ref}. What is the <b>greatest possible error</b>?`,
+    traps:[{v:u,k:'used the whole unit, not half',msg:'The greatest possible error is <b>half</b> the unit of measure.'}],hint:'Greatest possible error = ½ × (unit of measure).',steps:[`Unit = ${fmtN(u)} ${unit}`,`½ × ${fmtN(u)} = ${fmtN(u/2)} ${unit}`]};
+  return {kind:'num',ans:+(m-u/2).toFixed(3),tol:.0001,trapTol:.0001,prompt:`A length is measured as ${fmtN(m)} ${unit} to the ${ref}. What is the <b>least</b> the actual length could be?`,
+    traps:[{v:+(m-u).toFixed(3),k:'subtracted the whole unit',msg:'Subtract only half the unit: the actual length is within ½ unit of the measurement.'},{v:+(m+u/2).toFixed(3),k:'found the greatest instead of the least',msg:'That’s the greatest possible length. Subtract instead.'}],
+    hint:'Actual length is within ½ unit of the measurement: measurement − ½ unit.',steps:[`½ × ${fmtN(u)} = ${fmtN(u/2)}`,`${fmtN(m)} − ${fmtN(u/2)} = ${fmtN(+(m-u/2).toFixed(3))} ${unit}`]};
+}
+const SIGS=[['0.0045',2],['0.00450',3],['1200',2],['1200.0',5],['305',3],['40.0',3],['7.020',4],['0.105',3],['5000',1],['5.000',4],['12.30',4],['0.8',1],['1003',4],['20.50',4],['0.060',2],['3400',2],['60.08',4]];
+const SIGWHY={'0.0045':'Leading zeros never count.','0.00450':'Leading zeros don’t count; the trailing zero after the decimal does.','1200':'Trailing zeros with no decimal point don’t count.','1200.0':'With a decimal point, trailing zeros count.','305':'Zeros between nonzero digits always count.','40.0':'Trailing zeros after a decimal point count.','7.020':'The middle zero counts, and so does the trailing zero after the decimal.','0.105':'Leading zero doesn’t count; the zero between 1 and 5 does.','5000':'Trailing zeros with no decimal point don’t count.','5.000':'Trailing zeros after a decimal point count.','12.30':'The trailing zero after the decimal counts.','0.8':'The leading zero doesn’t count.','1003':'Zeros between nonzero digits count.','20.50':'The middle zero and the trailing zero after the decimal both count.','0.060':'Leading zeros don’t count; the trailing zero after the decimal does.','3400':'Trailing zeros with no decimal point don’t count.','60.08':'All the zeros here are between nonzero digits, so they count.'};
+function g_28(){
+  if(Math.random()<.55){const [n,c]=pick(SIGS);const all=n.replace('.','').length;
+    return {kind:'num',ans:c,tol:.01,prompt:`How many <b>significant figures</b> are in ${n}?`,traps:all!==c?[{v:all,k:'counted every digit',msg:'Not every zero is significant. '+SIGWHY[n]}]:[],
+      hint:'Nonzero digits count. Zeros between them count. Leading zeros never count. Trailing zeros count only if there’s a decimal point.',steps:[`${n} → ${c} significant figure${c>1?'s':''}`,SIGWHY[n]]};}
+  let a,b;do{a=ri(11,99);}while(a%10===0);do{b=ri(101,999);}while(b%10===0);a/=10;b/=100;
+  const raw=a*b,ans=+raw.toPrecision(2);
+  return {kind:'num',ans,tol:1e-6,trapTol:.001,prompt:`A rectangle measures ${a} cm by ${b} cm. Find its area, rounded to the correct number of significant figures.`,
+    traps:[{v:raw,k:'didn’t round to sig figs',msg:`When multiplying, the answer keeps the same number of significant figures as the <i>least</i> precise measurement: ${a} has 2.`},{v:+raw.toPrecision(3),k:'used too many sig figs',msg:`${b} has 3 sig figs, but ${a} has only 2. Use the smaller number: 2.`}],
+    hint:'Multiply, then round to the fewest significant figures among the measurements.',steps:[`${a} × ${b} = ${+raw.toFixed(4)}`,`${a} has 2 sig figs, ${b} has 3 → keep 2`,`Area ≈ ${ans} cm²`]};
+}
+
+/* ---------- curriculum ---------- */
+const LESSONS={
+ 'L1-1':{name:'1-1 The Geometric System',page:3,video:'undefined terms geometry point line plane',
+   ideas:['Geometry is built like a game with rules, called an <b>axiomatic system</b>.','<b>Undefined terms</b>: point, line, plane. They’re described, not defined.','<b>Definitions</b> are built from undefined terms (segment, ray, angle…).','<b>Postulates</b> (axioms) are accepted as true without proof. <b>Theorems</b> are proven using definitions, postulates, and earlier theorems.','A <b>conjecture</b> is a guess based on examples. It isn’t proven yet, and one counterexample can show it’s false.'],
+   ex:'“Through any two points there is exactly one line” → <b>postulate</b> (accepted).<br>“Vertical angles are congruent” → <b>theorem</b> (it gets proven).'},
+ 'L1-2':{name:'1-2 Points, Lines, and Planes',page:11,video:'naming points lines and planes',
+   ideas:['Point: a capital letter (A). Line: two points on it (line AB) or a lowercase script letter (line ℓ). Plane: three noncollinear points (plane ABC) or a capital script letter.','<b>Collinear</b> = on the same line. <b>Coplanar</b> = in the same plane.','Two lines meet in at most one point. Two planes meet in a line. Three noncollinear points lie in exactly one plane.','Segment AB = segment BA. But ray AB (starts at A) ≠ ray BA (starts at B).'],
+   ex:'Three planes can meet at a point (a room corner), along a line (pages of a book), or not at all (floors of a building).'},
+ 'L1-3':{name:'1-3 Line Segments',page:19,video:'segment addition postulate',
+   ideas:['B is <b>between</b> A and C only if all three are collinear and <b>AB + BC = AC</b> (Segment Addition Postulate).','Know the whole and one part? Subtract: missing part = whole − known part.','<b>Congruent</b> segments have equal lengths.','With algebra: write AB + BC = AC, combine like terms, solve for x, then plug x back in.'],
+   ex:'AB = 2x + 3, BC = 3x − 1, AC = 27<br>(2x + 3) + (3x − 1) = 27 → 5x + 2 = 27 → 5x = 25 → x = 5<br>So AB = 13 and BC = 14 (check: 13 + 14 = 27 ✓)'},
+ 'L1-4':{name:'1-4 Distance',page:27,video:'distance formula',
+   ideas:['On a number line: distance = |a − b|. It’s never negative.','On a coordinate plane, the distance is the hypotenuse of a right triangle (Pythagorean Theorem).','<b>d = √((x₂ − x₁)² + (y₂ − y₁)²)</b>','Square <i>before</i> adding, so negative differences become positive.'],
+   ex:'(1, 2) to (4, 6): Δx = 3, Δy = 4<br>d = √(3² + 4²) = √(9 + 16) = √25 = <b>5</b>'},
+ 'L1-5':{name:'1-5 Locating Points on a Number Line',page:35,video:'partition a segment number line',
+   ideas:['A point that is fraction <b>k</b> of the way from A to B: <b>P = A + k(B − A)</b>.','Start at A (not B!), and B − A can be negative. That just means you move left.','A ratio <b>m:n</b> means k = <b>m/(m + n)</b>. Ratio 1:2 → 1/3 of the way.'],
+   ex:'A = −2, B = 10, P is 1/3 of the way from A to B.<br>B − A = 12 → P = −2 + (1/3)(12) = −2 + 4 = <b>2</b>'},
+ 'L1-6':{name:'1-6 Locating Points on a Coordinate Plane',page:43,video:'directed line segment partition coordinate plane',
+   ideas:['Same idea as the number line, done for x and y separately.','<b>P = (x₁ + k(x₂ − x₁), y₁ + k(y₂ − y₁))</b>','Ratio m:n → k = m/(m + n).'],
+   ex:'A(1, 2), B(7, 11), P is 2/3 of the way from A to B.<br>Δx = 6, Δy = 9 → P = (1 + 4, 2 + 6) = <b>(5, 8)</b>'},
+ 'L1-7':{name:'1-7 Midpoints and Bisectors',page:49,video:'midpoint formula',
+   ideas:['Midpoint = the average of the endpoints: <b>M = ((x₁ + x₂)/2, (y₁ + y₂)/2)</b>.','Missing endpoint: take the step from A to M, then take the same step again past M.','A <b>segment bisector</b> passes through the midpoint, so AM = MB. Set them equal and solve.'],
+   ex:'A(2, −3), M(5, 1). Step A→M = (+3, +4). B = (5 + 3, 1 + 4) = <b>(8, 5)</b>'},
+ 'U2A':{name:'2-1 Angles and Congruence',page:65,video:'angle addition postulate',
+   ideas:['Angles are classified by measure: <b>acute</b> &lt; 90°, <b>right</b> = 90°, <b>obtuse</b> between 90° and 180°, <b>straight</b> = 180°.','<b>Angle Addition Postulate</b>: if D is inside ∠ABC, then m∠ABD + m∠DBC = m∠ABC.','<b>Congruent</b> angles have equal measures. An <b>angle bisector</b> splits an angle into two congruent angles.','Polygons: named by number of sides (pentagon 5, hexagon 6, octagon 8…). <b>Regular</b> = all sides AND all angles equal.'],
+   ex:'m∠ABD = (2x + 5)°, m∠DBC = (3x − 10)°, m∠ABC = 95°<br>5x − 5 = 95 → 5x = 100 → x = <b>20</b>'},
+ 'U2P':{name:'2-2 Angle Relationships',page:75,video:'vertical angles linear pair complementary supplementary',
+   ideas:['<b>Complementary</b>: add to 90°. <b>Supplementary</b>: add to 180°.','<b>Linear pair</b>: side by side on a straight line → supplementary.','<b>Vertical angles</b>: across from each other where two lines cross → congruent (equal).','Algebra tip: equal angles → set expressions equal. Supplementary angles → add them and set the sum to 180.'],
+   ex:'Vertical angles: (4x + 10)° and (6x − 20)°<br>4x + 10 = 6x − 20 → 30 = 2x → x = <b>15</b> (each angle is 70°)'},
+ 'L2-3':{name:'2-3 Two-Dimensional Figures',page:85,video:'perimeter and area on coordinate plane',
+   ideas:['A <b>polygon</b> is a closed figure made of segments. Name it by its number of sides: triangle 3, quadrilateral 4, pentagon 5, hexagon 6, octagon 8.','<b>Regular</b> = all sides and all angles equal. <b>Concave</b> = it “caves in”; <b>convex</b> = it doesn’t.','On a coordinate plane: count grid units for horizontal/vertical sides; use the distance formula for slanted sides.','<b>Perimeter</b> = distance around. <b>Area</b>: rectangle = l × w, triangle = ½ × b × h.'],
+   ex:'Triangle A(0, 0), B(6, 0), C(0, 8): AB = 6, AC = 8, BC = √(36 + 64) = 10<br>Perimeter = <b>24</b>, Area = ½ × 6 × 8 = <b>24</b>'},
+ 'L2-4':{name:'2-4 Transformations in the Plane',page:95,video:'transformations reflections rotations translations coordinates',
+   ideas:['<b>Translation</b> (slide): (x, y) → (x + a, y + b).','<b>Reflection</b> (flip): x-axis → (x, −y); y-axis → (−x, y); line y = x → (y, x).','<b>Rotation</b> about the origin: 90° counterclockwise → (−y, x); 180° → (−x, −y); 90° clockwise → (y, −x).','The image of A is written A′ (“A prime”). Rigid transformations keep size and shape the same.'],
+   ex:'A(3, −2) rotated 90° counterclockwise → (−y, x) = <b>(2, 3)</b>'},
+ 'L2-5':{name:'2-5 Three-Dimensional Figures',page:107,video:'faces edges vertices prisms pyramids volume',
+   ideas:['<b>Prism</b>: 2 matching bases + rectangular sides. <b>Pyramid</b>: 1 base + triangles meeting at a point.','For a base with n sides: prism has n + 2 faces, 2n vertices, 3n edges; pyramid has n + 1 faces, n + 1 vertices, 2n edges.','<b>Euler’s formula</b>: F + V = E + 2.','Volume: prism = l × w × h; cylinder = πr²h. Surface area = total area of all faces.'],
+   ex:'Hexagonal prism: F = 8, V = 12, E = 18. Check: 8 + 12 = 20 = 18 + 2 ✓'},
+ 'L2-6':{name:'2-6 2-D Representations of 3-D Figures',page:117,video:'cross sections of 3d figures nets',
+   ideas:['A <b>net</b> is a flat pattern that folds into a solid. A triangular prism’s net: 2 triangles + 3 rectangles.','A <b>cross section</b> is the shape you get by slicing a solid with a plane.','Slices parallel to a base match the base (cube → square, cone → circle).','<b>Orthographic views</b> show a solid from the top, front, and side.'],
+   ex:'Cylinder: slice parallel to the base → circle; slice straight down through the center → rectangle'},
+ 'L2-7':{name:'2-7 Precision and Accuracy',page:129,video:'precision accuracy greatest possible error',
+   ideas:['<b>Precision</b>: how fine the unit is. Smaller unit → more precise.','<b>Accuracy</b>: how close the measurement is to the true value.','<b>Greatest possible error</b> = ½ of the unit of measure.','A measurement to the nearest unit u means the actual value is between (measurement − u/2) and (measurement + u/2).'],
+   ex:'12 cm to the nearest cm → greatest possible error 0.5 cm → actual length between <b>11.5</b> and <b>12.5</b> cm'},
+ 'L2-8':{name:'2-8 Representing Measurements',page:137,video:'significant figures rules',
+   ideas:['Nonzero digits are always significant. Zeros <i>between</i> nonzero digits are significant.','<b>Leading</b> zeros (0.004) are never significant.','<b>Trailing</b> zeros count only if there’s a decimal point: 40.0 has 3; 400 has 1.','Multiplying/dividing measurements: round the answer to the <b>fewest</b> significant figures among the measurements.'],
+   ex:'3.2 cm × 4.71 cm = 15.072 → 3.2 has 2 sig figs → <b>15 cm²</b>'},
+ 'U3C':{name:'Unit 3B preview: Conditional statements',page:null,video:'converse inverse contrapositive',
+   ideas:['A <b>conditional</b>: “If p, then q.” p is the hypothesis, q is the conclusion.','<b>Converse</b>: switch → If q, then p.','<b>Inverse</b>: negate both → If not p, then not q.','<b>Contrapositive</b>: switch and negate → If not q, then not p. It’s always true when the original is true.','A <b>counterexample</b> shows a statement is false.'],
+   ex:'“If you live in Greenville, then you live in SC.” (true)<br>Converse: “If you live in SC, then you live in Greenville.” (false: counterexample Columbia)'},
+ 'U3T':{name:'Unit 3B preview: Parallel lines & transversals',page:null,video:'parallel lines transversal angles',
+   ideas:['A <b>transversal</b> crosses two lines. With <b>parallel</b> lines, special pairs appear:','<b>Corresponding</b>, <b>alternate interior</b>, and <b>alternate exterior</b> angles are congruent.','<b>Same-side interior</b> angles are supplementary (add to 180°).','Shortcut: every acute angle in the picture is equal, every obtuse angle is equal, and acute + obtuse = 180°.'],
+   ex:'m∠3 = 110° and ∠3, ∠6 are alternate interior → m∠6 = <b>110°</b>. ∠3 and ∠5 are same-side interior → m∠5 = 180° − 110° = <b>70°</b>'},
+ 'PROB':{name:'Probability refresh (Unit 3)',page:null,video:'compound probability',
+   ideas:['P(event) = favorable ÷ total. P(not A) = 1 − P(A).','<b>AND</b> (independent): multiply. Without replacement, the second pick has one fewer item.','<b>OR</b>: P(A or B) = P(A) + P(B) − P(A and B). Subtract the overlap.','<b>Given</b> (conditional): P(A | B) = (A and B) ÷ B. Only look at the B group.'],
+   ex:'5 red and 3 blue, pick 2 without replacement. P(both red) = 5/8 × 4/7 = 20/56 = <b>5/14</b>'}
+};
+const SKILLS={
+ s11a:{name:'Undefined terms & definitions',lesson:'L1-1',gen:mcGen('s11a')},
+ s11b:{name:'Postulates, theorems & conjectures',lesson:'L1-1',gen:mcGen('s11b')},
+ s12a:{name:'Naming points, lines, rays & planes',lesson:'L1-2',gen:mcGen('s12a')},
+ s12b:{name:'Collinear, coplanar & intersections',lesson:'L1-2',gen:mcGen('s12b')},
+ s13a:{name:'Segment Addition',lesson:'L1-3',gen:g13a},
+ s13b:{name:'Segment Addition with algebra',lesson:'L1-3',gen:g13b},
+ s14a:{name:'Distance on a number line',lesson:'L1-4',gen:g14a},
+ s14b:{name:'Distance formula',lesson:'L1-4',gen:g14b},
+ s14c:{name:'Distance step by step (right triangle)',lesson:'L1-4',gen:g14c},
+ s15:{name:'Fraction of the way (number line)',lesson:'L1-5',gen:g15},
+ s16:{name:'Fraction of the way (coordinate plane)',lesson:'L1-6',gen:g16},
+ s17a:{name:'Midpoint formula',lesson:'L1-7',gen:g17a},
+ s17b:{name:'Find a missing endpoint',lesson:'L1-7',gen:g17b},
+ s17c:{name:'Bisectors with algebra',lesson:'L1-7',gen:g17c},
+ a1:{name:'Angle Addition',lesson:'U2A',gen:g_a1},
+ a5:{name:'Classifying angles & polygons',lesson:'L2-3',gen:mcGen('a5')},
+ a4:{name:'Angle bisectors with algebra',lesson:'U2A',gen:g_a4},
+ a2:{name:'Complementary & supplementary',lesson:'U2P',gen:g_a2},
+ a3:{name:'Vertical angles & linear pairs',lesson:'U2P',gen:g_a3},
+ b23:{name:'Perimeter & area on the coordinate plane',lesson:'L2-3',gen:g_23},
+ b24:{name:'Transformations with coordinates',lesson:'L2-4',gen:g_24},
+ b25:{name:'Prisms, pyramids & volume',lesson:'L2-5',gen:g_25},
+ b26:{name:'Nets, cross sections & views',lesson:'L2-6',gen:mcGen('b26')},
+ b27:{name:'Precision & accuracy',lesson:'L2-7',gen:mcGen('b27')},
+ b27e:{name:'Greatest possible error',lesson:'L2-7',gen:g_27},
+ b28:{name:'Significant figures',lesson:'L2-8',gen:g_28},
+ c1:{name:'Converse, inverse, contrapositive',lesson:'U3C',gen:g_c1},
+ c2:{name:'Parallel lines & transversals',lesson:'U3T',gen:g_c2},
+ p1:{name:'Basic probability & complements',lesson:'PROB',gen:g_p1},
+ p2:{name:'AND: with & without replacement',lesson:'PROB',gen:g_p2},
+ p3:{name:'Two-way tables: or, and, given',lesson:'PROB',gen:g_p3}
+};
+const M1=Object.keys(SKILLS).filter(k=>k[0]==='s');
+const WEEKS={W1:'Retake prep · Module 1 test on Thu, Nov 19',W2:'After the retake · Module 2 review (Nov 20–25)',W3:'Week of Nov 30 · Unit 3B preview + probability'};
+const SESSIONS=[
+ {id:'R1',wk:'W1',title:'1-1 & 1-2: Vocabulary, postulates, naming',sub:'Fri, Nov 13 · fast review',learn:['L1-1','L1-2'],skills:['s11a','s11b','s12a','s12b'],n:10},
+ {id:'R2',wk:'W1',title:'1-3 & 1-4: Segments and distance',sub:'Sat, Nov 14 · fast review',learn:['L1-3','L1-4'],skills:['s13a','s13b','s14a','s14b'],n:10},
+ {id:'R2b',wk:'W1',title:'Fix-it: distance formula, step by step',sub:'Fri, Nov 13 · built from what you missed last night',learn:['L1-4'],skills:['s14c','s14c','s14c','s14b','s13b'],n:10},
+ {id:'R3',wk:'W1',title:'1-5 & 1-6: Fraction of the way',sub:'Sat, Nov 14 · fast review',learn:['L1-5','L1-6'],skills:['s15','s16'],n:8},
+ {id:'R4',wk:'W1',title:'1-7: Midpoints and bisectors',sub:'Sun, Nov 15 · fast review + mixed (Mon: do a Smart Review)',learn:['L1-7'],skills:['s17a','s17b','s17c','s14b','s13b'],n:10},
+ {id:'R5',wk:'W1',title:'Practice test #1: 1-1 to 1-7',sub:'Tue, Nov 17 · no hints, one try, like the real test. Then do a Smart Review on what you missed.',learn:null,test:true,skills:M1,n:15},
+ {id:'R6',wk:'W1',title:'Practice test #2: final check',sub:'Wed, Nov 18 · a fresh set of questions the night before',learn:null,test:true,skills:M1,n:15},
+ {id:'M1',wk:'W2',title:'2-1 & 2-2: Angles and angle relationships',sub:'Module 2 review',learn:['U2A','U2P'],skills:['a1','a4','a2','a3'],n:10},
+ {id:'M2',wk:'W2',title:'2-3 & 2-4: Polygons and transformations',sub:'Module 2 review',learn:['L2-3','L2-4'],skills:['b23','a5','b24','b24'],n:10},
+ {id:'M3',wk:'W2',title:'2-5 & 2-6: Three-dimensional figures',sub:'Module 2 review',learn:['L2-5','L2-6'],skills:['b25','b26'],n:10},
+ {id:'M4',wk:'W2',title:'2-7 & 2-8: Precision and measurement',sub:'Module 2 review',learn:['L2-7','L2-8'],skills:['b27','b27e','b28'],n:10},
+ {id:'M5',wk:'W2',title:'Practice test: Module 2',sub:'No hints, one try, like the real test',learn:null,test:true,skills:['a1','a2','a3','a4','a5','b23','b24','b24','b25','b26','b27','b27e','b28'],n:15},
+ {id:'C1',wk:'W3',title:'Conditional statements',sub:'Preview: Unit 3B',learn:['U3C'],skills:['c1'],n:7},
+ {id:'C2',wk:'W3',title:'Parallel lines & transversals',sub:'Preview: Unit 3B',learn:['U3T'],skills:['c2'],n:8},
+ {id:'S6',wk:'W3',title:'Probability refresh',sub:'Keep Unit 3 fresh',learn:['PROB'],skills:['p1','p2','p3'],n:8}
+];
+
+/* ---------- state ---------- */
+const KEY='geometryCoach.london.v1';
+let state={skills:{},sessions:{},log:[],days:[],recent:{}};
+let storageOK=true;
+function load(){try{const s=localStorage.getItem(KEY);if(s)state=Object.assign(state,JSON.parse(s));}catch(e){storageOK=false;}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){storageOK=false;}}
+function sk(id){return state.skills[id]||(state.skills[id]={att:0,clean:0,correct:0,streak:0,days:[],traps:{}});}
+function status(id){const s=state.skills[id];if(!s||!s.att)return 'new';if(s.streak>=4&&s.days.length>=2)return 'mastered';if(s.streak>=2)return 'close';return 'practicing';}
+const STATUS={new:['Not started','new'],practicing:['Practicing','warn'],close:['Getting there',''],mastered:['Mastered','good']};
+function record(id,clean,correct,trapK){
+  const s=sk(id),t=todayStr();s.att++;if(correct)s.correct++;
+  if(clean){s.clean++;s.streak++;if(!s.days.includes(t))s.days.push(t);}else s.streak=0;
+  if(trapK)s.traps[trapK]=(s.traps[trapK]||0)+1;
+  if(!state.days.includes(t))state.days.push(t);
+  save();
+}
+
+/* ---------- UI ---------- */
+const main=document.getElementById('main');
+let tab='today', run=null;
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),1800);}
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{if(run&&!confirm2())return;run=null;setTab(b.dataset.tab);});
+function confirm2(){return true;}
+function setTab(t){tab=t;document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.tab===t));render();window.scrollTo(0,0);}
+function headerStats(){
+  const done=SESSIONS.filter(s=>state.sessions[s.id]).length;
+  const mast=Object.keys(SKILLS).filter(k=>status(k)==='mastered').length;
+  document.getElementById('hstats').textContent=`${done}/${SESSIONS.length} sessions · ${mast}/${Object.keys(SKILLS).length} skills mastered`;
+}
+function render(){headerStats(); if(run) return renderRun(); ({today:renderToday,practice:renderPractice,progress:renderProgress})[tab]();}
+
+function setName(){const v=(document.getElementById('nmIn').value||'').trim().slice(0,30);if(!v)return;state.name=v;save();render();}
+function nextSession(){return SESSIONS.find(s=>!state.sessions[s.id]);}
+function renderToday(){
+  const nx=nextSession(); const weak=weakSkills();
+  const greet=new Date().getHours()<12?'Good morning':new Date().getHours()<17?'Good afternoon':'Good evening';
+  const nm=state.name||'';let h=`<h1>${greet}${nm?', '+esc(nm):''} 👋</h1><p class="sub">About 20–30 minutes a day. Do the next session, or a Smart Review if you’ve finished them all.</p>`;
+  const pt=state.log.filter(l=>l.title.startsWith('Practice test #')).slice(0,2);
+  const daysLeft=Math.round((new Date(2026,10,19)-new Date(new Date().getFullYear(),new Date().getMonth(),new Date().getDate()))/864e5);
+  if(daysLeft>=0) h+=`<div class="fb hint" style="margin-top:0"><b>🎯 Module 1 retake: Thu, Nov 19${daysLeft===0?' (today, good luck!)':daysLeft===1?' (tomorrow)':` (${daysLeft} days away)`}.</b> One session a day: 4 fast reviews, then a practice test Tuesday and another Wednesday.${pt.length?` Your practice test scores: ${pt.map(l=>l.pct+'%').reverse().join(' → ')}.`:''}</div>`;
+  if(!nm) h+=`<div class="card"><h3>First time here? What’s your first name?</h3><div class="ans"><input id="nmIn" placeholder="First name" autocomplete="off"><button class="btn" onclick="setName()">Save</button></div><p class="small muted" style="margin-bottom:0">It’s only saved on this device.</p></div>`;
+  if(!storageOK) h+=`<div class="fb hint">This browser isn’t letting the page save progress. Try opening it in Chrome or Safari directly (not a private window).</div>`;
+  if(nx){
+    const i=SESSIONS.indexOf(nx);
+    h+=`<div class="card hero"><span class="tag">Session ${i+1} · ${esc(nx.sub)}</span><h2 style="margin:10px 0 4px">${esc(nx.title)}</h2>
+    <p class="muted" style="margin:0 0 14px">${nx.learn?'Quick lesson review, then ':''}${nx.n} practice problems · ~${nx.learn?25:20} min</p>
+    <button class="btn orange" onclick="startSession('${nx.id}')">Start session</button></div>`;
+  } else h+=`<div class="card hero"><h2 style="margin:0 0 6px">🎉 All sessions done!</h2><p class="muted" style="margin:0">Keep skills fresh with a Smart Review each day. New lessons will be added as the class moves on.</p></div>`;
+  if(weak.length) h+=`<div class="card"><div class="row"><div style="flex:1"><h3>Smart Review</h3><p class="muted small" style="margin:0">6 problems on the skills that need it most: ${weak.map(k=>esc(SKILLS[k].name)).join(', ')}.</p></div><button class="btn alt" onclick="startSmart()">Start review</button></div></div>`;
+  h+=`<h2>Your plan</h2>`;
+  for(const [wk,label] of Object.entries(WEEKS)){
+    const list=SESSIONS.filter(s=>s.wk===wk);const doneN=list.filter(s=>state.sessions[s.id]).length;
+    h+=`<div class="card"><div class="row" style="justify-content:space-between"><h3 style="margin:0">${esc(label)}</h3><span class="tag ${doneN===list.length?'good':''}">${doneN}/${list.length} done</span></div><ul class="path">`+list.map(s=>{const i=SESSIONS.indexOf(s),d=state.sessions[s.id],isNext=nx&&nx.id===s.id;
+      return `<li><span class="dot ${d?'done':isNext?'next':''}">${d?'✓':i+1}</span><span class="t">${esc(s.title)}<small>${esc(s.sub)}${d?` · best ${d.best}%`:''}</small></span><button class="btn ${d?'ghost':'alt'}" onclick="startSession('${s.id}')">${d?'Redo':'Start'}</button></li>`;}).join('')+`</ul></div>`;
+  }
+  h+=`<div class="card"><h3>Coming in December</h3><p class="muted small" style="margin:0">Unit 3B: Logical Arguments and Line Relationships. Full lessons will be added here as the class gets to them.</p></div>
+  <p class="small muted">Off days are fine. The plan picks up where you left off. Tip: press <b>Enter</b> to check an answer.</p>`;
+  main.innerHTML=h;
+}
+function weakSkills(){
+  const tried=Object.keys(SKILLS).filter(k=>state.skills[k]&&state.skills[k].att);
+  const rank={practicing:0,close:1,mastered:3};
+  return tried.filter(k=>status(k)!=='mastered').sort((a,b)=>{const A=state.skills[a],B=state.skills[b];return (rank[status(a)]-rank[status(b)])||((A.clean/A.att)-(B.clean/B.att));}).slice(0,3);
+}
+function renderPractice(){
+  const groups={};Object.entries(SKILLS).forEach(([k,v])=>(groups[v.lesson]=groups[v.lesson]||[]).push(k));
+  let h=`<h1>Practice by skill</h1><p class="sub">Pick any skill for 5 quick problems. A skill is <b>Mastered</b> after 4 first-try correct answers in a row, earned on at least 2 different days.</p>`;
+  for(const [L,ks] of Object.entries(groups)){
+    const les=LESSONS[L];
+    h+=`<div class="card"><div class="row" style="justify-content:space-between"><h3 style="margin:0">${esc(les.name)}</h3><button class="btn ghost small" onclick="showLearn('${L}')">Review lesson</button></div>`+
+    ks.map(k=>{const s=state.skills[k],st=STATUS[status(k)];const acc=s&&s.att?Math.round(100*s.clean/s.att):0;
+      return `<div class="skill"><span class="nm">${esc(SKILLS[k].name)}<small>${s&&s.att?`${s.att} tried · ${acc}% first try`:'Not tried yet'}</small></span><span class="tag ${st[1]}">${st[0]}</span><button class="btn alt" onclick="startSkill('${k}')">Practice</button></div>`;}).join('')+`</div>`;
+  }
+  main.innerHTML=h;
+}
+function showLearn(L){run={mode:'learnOnly',learn:L};render();window.scrollTo(0,0);}
+
+/* ---------- runs ---------- */
+function buildQueue(skills,n){const q=[];const pool=shuffle(skills);for(let i=0;i<n;i++)q.push(pool[i%pool.length]);return shuffle(q);}
+function startSession(id){const s=SESSIONS.find(x=>x.id===id);run={mode:'session',sess:s,test:!!s.test,queue:buildQueue(s.skills,s.n),i:0,results:[],phase:s.learn?'learn':'q'};newQ();render();window.scrollTo(0,0);}
+function startSkill(k){run={mode:'skill',skill:k,queue:buildQueue([k],5),i:0,results:[],phase:'q'};newQ();render();window.scrollTo(0,0);}
+function startSmart(){const w=weakSkills();if(!w.length)return;run={mode:'smart',queue:buildQueue(w,6),i:0,results:[],phase:'q'};newQ();render();window.scrollTo(0,0);}
+function newQ(){if(!run.queue||run.i>=run.queue.length)return;const k=run.queue[run.i];run.q=Object.assign({skill:k},SKILLS[k].gen());run.tries=0;run.hint=false;run.done=false;run.fb='';run.sel=null;run.trapK=null;}
+function quit(){run=null;render();}
+
+function learnCard(L,withStart){
+  const l=LESSONS[L];
+  const yt='https://www.khanacademy.org/search?page_search_query='+encodeURIComponent(l.video);
+  return `<div class="card learn"><span class="tag">Quick review</span><h2 style="margin:10px 0 6px">${esc(l.name)}</h2>
+  <ul>${l.ideas.map(i=>`<li>${i}</li>`).join('')}</ul>
+  <div class="example"><b>Example</b><br>${l.ex}</div>
+  <p class="small muted">${l.page?`📘 Textbook: Lesson ${l.name.split(' ')[0]}, page ${l.page}. Read the examples there too. · `:''}🎥 <a href="${yt}" target="_blank" rel="noopener">Find a short video on Khan Academy</a></p>
+  ${withStart?`<button class="btn orange" onclick="run.phase='q';render();window.scrollTo(0,0)">I’m ready, start practice →</button>`:`<button class="btn alt" onclick="quit()">Back</button>`}</div>`;
+}
+
+function renderRun(){
+  if(run.mode==='learnOnly'){main.innerHTML=`<p><button class="btn ghost" onclick="quit()">← Back</button></p>`+learnCard(run.learn,false);return;}
+  const title=run.mode==='session'?run.sess.title:run.mode==='skill'?SKILLS[run.skill].name:'Smart Review';
+  let h=`<div class="row" style="margin-top:20px"><button class="btn ghost" onclick="quit()">← Exit</button><b style="flex:1">${esc(title)}</b></div>`;
+  if(run.phase==='learn'){const Ls=[].concat(run.sess.learn);main.innerHTML=h+(Ls.length>1?`<p class="muted">Skim these ${Ls.length} quick reviews (about 5 minutes), then practice.</p>`:'')+`<div class="fb hint" style="margin-top:0">✏️ Get paper and a pencil. Work every problem on paper, then type your answer. At the end you can copy your results for your teacher.</div>`+Ls.map(L=>learnCard(L,false).replace(/<button class="btn alt" onclick="quit\(\)">Back<\/button>/,'')).join('')+`<button class="btn orange" onclick="run.phase='q';render();window.scrollTo(0,0)">I’m ready, start practice →</button>`;return;}
+  if(run.phase==='summary'){main.innerHTML=h+summaryHTML();return;}
+  const q=run.q,n=run.queue.length;
+  h+=`<div class="card"><div class="qhead"><span>Question ${run.i+1} of ${n}</span><span class="tag">${esc(SKILLS[q.skill].name)}</span></div>
+  <div class="bar"><i style="width:${100*run.i/n}%"></i></div>
+  <div class="prompt">${q.prompt}</div>${q.svg?`<div class="diagram">${q.svg}</div>`:''}`;
+  if(q.kind==='mc'){
+    h+=`<div class="opts">`+q.options.map((o,i)=>{let c='opt';if(run.done&&o.ok)c+=' right';else if(run.wrongPicks&&run.wrongPicks.includes(i))c+=' wrong';else if(run.sel===i)c+=' sel';
+      return `<button class="${c}" ${run.done||(run.wrongPicks&&run.wrongPicks.includes(i))?'disabled':''} onclick="run.sel=${i};render()">${o.t}</button>`;}).join('')+`</div>`;
+  } else if(q.kind==='num'){
+    h+=`<div class="ans"><input id="a1" autocomplete="off" placeholder="Your answer" ${run.done?'disabled':''} value="${esc(run.v1||'')}"></div>
+    <div class="chips">${['−','/','√'].map(c=>`<button class="chip" onclick="ins('${c}')">${c}</button>`).join('')}<span class="kbd" style="align-self:center;margin-left:6px">Fractions like 3/4 are fine</span></div>`;
+  } else if(q.kind==='multi'){
+    h+=q.fields.map((f,i)=>`<div class="ans" style="margin:8px 0"><label style="flex:1;min-width:220px">${f.label}</label><input id="f${i}" autocomplete="off" ${run.done?'disabled':''} value="${esc((run.fv||[])[i]||'')}" style="width:120px">${run.fstat&&run.fstat[i]!=null?(run.fstat[i]?' ✅':' ❌'):''}</div>`).join('')+`<div class="chips">${['−','√'].map(c=>`<button class="chip" onclick="ins('${c}')">${c}</button>`).join('')}</div>`;
+  } else {
+    h+=`<div class="ans pt">( <input id="a1" autocomplete="off" placeholder="x" ${run.done?'disabled':''} value="${esc(run.v1||'')}"> , <input id="a2" autocomplete="off" placeholder="y" ${run.done?'disabled':''} value="${esc(run.v2||'')}"> )</div>
+    <div class="chips">${['−','/'].map(c=>`<button class="chip" onclick="ins('${c}')">${c}</button>`).join('')}</div>`;
+  }
+  h+=run.fb;
+  h+=`<div class="row" style="margin-top:16px">`;
+  if(run.test&&!run.done){h+=`<button class="btn" onclick="check()">Submit answer →</button><span class="small muted">No hints. Work it out on paper, then type your answer. You’ll see every solution at the end.</span>`;}
+  else if(!run.done){h+=`<button class="btn" onclick="check()">Check</button>`; if(!run.hint) h+=`<button class="btn ghost" onclick="showHint()">💡 Hint</button>`;}
+  else h+=`<button class="btn orange" id="nextBtn" onclick="nextQ()">${run.i+1<n?'Next question →':'See results →'}</button>`;
+  h+=`</div></div>`;
+  main.innerHTML=h;
+  const a1=document.getElementById('a1');
+  if(a1&&!run.done){a1.focus();}
+  document.querySelectorAll('.ans input').forEach(inp=>{inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();check();}});inp.addEventListener('focus',()=>lastFocus=inp);});
+  const nb=document.getElementById('nextBtn');if(nb)nb.focus();
+}
+let lastFocus=null;
+function ins(c){const inp=lastFocus||document.getElementById('a1');if(!inp)return;const s=inp.selectionStart??inp.value.length;inp.value=inp.value.slice(0,s)+c+inp.value.slice(inp.selectionEnd??s);inp.focus();inp.setSelectionRange(s+1,s+1);}
+function showHint(){run.hint=true;keepInputs();run.fb+=`<div class="fb hint">💡 ${run.q.hint}${videoLinks(run.q.skill)}</div>`;render();}
+function keepInputs(){const a=document.getElementById('a1'),b=document.getElementById('a2');if(a)run.v1=a.value;if(b)run.v2=b.value;if(run.q&&run.q.kind==='multi')run.fv=run.q.fields.map((f,i)=>{const e=document.getElementById('f'+i);return e?e.value:'';});}
+function near(a,b,t){return Math.abs(a-b)<=t;}
+function check(){
+  const q=run.q; keepInputs(); let ok=false,trap=null;
+  if(q.kind==='mc'){
+    if(run.sel==null){toast('Pick an answer first');return;}
+    run.lastPick=run.sel;
+    const o=q.options[run.sel];ok=o.ok;if(!ok){trap={k:'mc',msg:o.fb};run.wrongPicks=[...(run.wrongPicks||[]),run.sel];run.sel=null;}
+    else trap={msg:o.fb};
+  } else if(q.kind==='num'){
+    const v=parseNum(run.v1);if(isNaN(v)){toast('Type a number (like 12, −3.5, 3/4, or √20)');return;}
+    ok=near(v,q.ans,q.tol);if(!ok)trap=(q.traps||[]).find(t=>near(v,t.v,q.trapTol??Math.max(q.tol,.011)))||null;
+  } else if(q.kind==='multi'){
+    const vals=run.fv.map(parseNum);if(vals.some(isNaN)){toast('Fill in every box');return;}
+    run.fstat=q.fields.map((f,i)=>near(f.abs?Math.abs(vals[i]):vals[i],f.ans,f.tol));ok=run.fstat.every(Boolean);
+    if(!ok){const i=run.fstat.indexOf(false),f=q.fields[i];const t=(f.traps||[]).find(t=>near(vals[i],t.v,.011));
+      trap={k:t?(i===2&&t.v===q.fields[0].ans+q.fields[1].ans?'added Δx + Δy (no squaring)':'forgot the square root'):null,msg:`Step ${i+1}: ${t?t.msg:f.miss}`};}
+  } else {
+    const x=parseNum(run.v1),y=parseNum(run.v2);if(isNaN(x)||isNaN(y)){toast('Fill in both x and y');return;}
+    ok=near(x,q.ans[0],q.tol)&&near(y,q.ans[1],q.tol);
+    if(!ok){trap=(q.traps||[]).find(t=>near(x,t.v[0],.011)&&near(y,t.v[1],.011))||null;
+      if(!trap&&near(x,q.ans[1],q.tol)&&near(y,q.ans[0],q.tol))trap={k:'swapped x and y',msg:'Your numbers are right but in the wrong order. Write (x, y).'};
+      else if(!trap&&(near(x,q.ans[0],q.tol)||near(y,q.ans[1],q.tol)))trap={k:null,msg:`One coordinate is right (${near(x,q.ans[0],q.tol)?'x':'y'}). Recheck the other one.`};}
+  }
+  run.tries++;
+  const givenNow=q.kind==='multi'?run.fv.map(esc).join(', '):q.kind==='mc'?q.options[run.lastPick].t:q.kind==='num'?esc(run.v1):`(${esc(run.v1)}, ${esc(run.v2)})`;
+  if(run.test){
+    const given=q.kind==='mc'?q.options[run.lastPick].t:q.kind==='num'?esc(run.v1):`(${esc(run.v1)}, ${esc(run.v2)})`;
+    const tk=trap&&trap.k&&trap.k!=='mc'?trap.k:null;
+    run.results.push({skill:q.skill,clean:ok,correct:ok,trapK:tk,q,given,trapMsg:trap&&!ok?trap.msg:''});record(q.skill,ok,ok,tk);
+    nextQ();return;
+  }
+  if(ok){
+    const clean=run.tries===1&&!run.hint;
+    run.results.push({skill:q.skill,clean,correct:true,q,given:givenNow,tries:run.tries,hint:run.hint});record(q.skill,clean,true,run.trapK);
+    run.done=true;
+    run.fb+=`<div class="fb good"><b>${clean?pick(['Correct! ✅','Nailed it! ✅','Yes! ✅']):'Got it ✅'}</b>${q.kind==='mc'&&trap?' '+trap.msg:''}${q.steps?stepsHTML(q):''}</div>`;
+  } else if(run.tries===1){
+    if(trap&&trap.k&&trap.k!=='mc')run.trapK=trap.k;
+    run.fb+=`<div class="fb bad"><b>Not quite.</b> ${trap?trap.msg:'Check your work. Tap Hint if you’re stuck.'} <b>Try again.</b>${videoLinks(q.skill)}</div>`;
+  } else {
+    if(!run.trapK&&trap&&trap.k&&trap.k!=='mc')run.trapK=trap.k;
+    run.results.push({skill:q.skill,clean:false,correct:false,trapK:run.trapK,q,given:givenNow,trapMsg:trap?trap.msg:''});record(q.skill,false,false,run.trapK);
+    run.done=true;
+    const ansStr=q.kind==='multi'?q.fields.map(f=>f.tol>.04?'≈ '+f.ans.toFixed(1):fmtN(f.ans)).join(', '):q.kind==='mc'?q.options.find(o=>o.ok).t:q.kind==='num'?fmtAns(q):P(...q.ans);
+    run.fb+=`<div class="fb bad"><b>Not this time.</b> ${trap?trap.msg+' ':''}The answer is <b>${ansStr}</b>.${q.steps?stepsHTML(q):''}${videoLinks(q.skill)}<div class="small muted" style="margin-top:6px">This skill will come back in your Smart Review.</div></div>`;
+  }
+  render();
+}
+function fmtAns(q){const a=q.ans;if(q.tol>.04)return '≈ '+a.toFixed(1);if(Math.abs(a-Math.round(a))<1e-9)return fmtN(a);for(let d=2;d<=200;d++){const n=Math.round(a*d);if(Math.abs(n/d-a)<1e-9)return frac(n,d)+(q.tol<.01?` (≈ ${(+a.toFixed(3))})`:'');}return fmtN(a);}
+function stepsHTML(q){return `<div style="margin-top:8px"><b>How it works:</b><ol class="steps">${q.steps.map(s=>`<li class="mono">${s}</li>`).join('')}</ol></div>`;}
+function nextQ(){run.i++;run.wrongPicks=null;run.v1='';run.v2='';run.fv=null;run.fstat=null;if(run.i>=run.queue.length){finish();}else newQ();render();window.scrollTo(0,0);}
+function finish(){
+  run.phase='summary';
+  const r=run.results,clean=r.filter(x=>x.clean).length,pct=Math.round(100*clean/r.length);
+  const entry={date:todayStr(),kind:run.mode,title:run.mode==='session'?run.sess.title:run.mode==='skill'?SKILLS[run.skill].name:'Smart Review',clean,total:r.length,pct,missed:[...new Set(r.filter(x=>!x.clean).map(x=>x.skill))],traps:r.filter(x=>x.trapK).map(x=>x.trapK)};
+  state.log.unshift(entry);state.log=state.log.slice(0,200);
+  if(run.mode==='session'){const prev=state.sessions[run.sess.id];state.sessions[run.sess.id]={date:todayStr(),best:Math.max(pct,prev?prev.best:0)};}
+  save();run.entry=entry;
+}
+function summaryHTML(){
+  const e=run.entry;const by={};run.results.forEach(x=>{by[x.skill]=by[x.skill]||{c:0,t:0};by[x.skill].t++;if(x.clean)by[x.skill].c++;});
+  const msg=e.pct>=85?['🌟 Excellent work!','You’re ready to move on. Come back tomorrow for the next session.']:e.pct>=60?['👍 Solid effort!','A few things to tighten up. Your Smart Review will bring back the skills you missed.']:['💪 Good practice, keep going.','This one’s worth another try. Reread the example in the lesson review, then redo this session tomorrow.'];
+  let h=`<div class="card hero"><h2 style="margin:0 0 4px">${msg[0]}</h2><p style="font-size:1.4rem;margin:6px 0"><b>${e.clean} / ${e.total}</b> correct on the first try (${e.pct}%)</p><p class="muted" style="margin:0">${msg[1]}</p></div>
+  <div class="card"><h3>By skill</h3>`+Object.entries(by).map(([k,v])=>`<div class="skill"><span class="nm">${esc(SKILLS[k].name)}</span><span class="mono">${v.c}/${v.t}</span><span class="tag ${STATUS[status(k)][1]}">${STATUS[status(k)][0]}</span></div>`).join('')+`</div>`;
+  if(e.traps.length){const c={};e.traps.forEach(t=>c[t]=(c[t]||0)+1);h+=`<div class="card"><h3>Watch out for</h3><ul>${Object.entries(c).map(([t,n])=>`<li>${esc(t)}${n>1?` (${n}×)`:''}</li>`).join('')}</ul></div>`;}
+  if(run.test){const miss=run.results.filter(x=>!x.correct);
+    if(miss.length)h+=`<h2>Review what you missed</h2>`+miss.map(x=>{const q=x.q;const ansStr=q.kind==='mc'?q.options.find(o=>o.ok).t:q.kind==='num'?fmtAns(q):P(...q.ans);
+      return `<div class="card"><span class="tag">${esc(SKILLS[q.skill].name)}</span><div class="prompt">${q.prompt}</div>${q.svg?`<div class="diagram">${q.svg}</div>`:''}<div class="fb bad">Your answer: <b>${x.given}</b>. Correct: <b>${ansStr}</b>.${x.trapMsg?' '+x.trapMsg:''}${q.steps?stepsHTML(q):''}${videoLinks(q.skill)}</div></div>`;}).join('');
+    else h+=`<div class="card"><b>Perfect score! 🎉</b> You’re ready for the retake.</div>`;}
+  h+=teacherCard();
+  h+=`<div class="row"><button class="btn orange" onclick="quit()">Done</button>${run.mode==='session'?`<button class="btn ghost" onclick="startSession('${run.sess.id}')">Try again</button>`:''}</div>`;
+  return h;
+}
+
+
+
+/* ---------- Khan Academy videos (shown when stuck) ---------- */
+const KA='https://www.khanacademy.org';
+const V={
+ euclid:['Euclid as the father of geometry',KA+'/math/geometry/hs-geo-transformations/hs-geo-intro-euclid/v/euclid-as-the-father-of-geometry'],
+ terms:['Terms & labels in geometry',KA+'/math/geometry/hs-geo-transformations/hs-geo-intro-euclid/v/language-and-notation-of-basic-geometry'],
+ lines:['Lines, line segments & rays',KA+'/math/cc-fourth-grade-math/plane-figures/imp-lines-line-segments-and-rays/v/lines-line-segments-and-rays'],
+ rays:['Identifying rays',KA+'/math/geometry-home/geometry-lines/geometry-lines-rays/v/identifying-rays'],
+ planes:['Specifying planes in three dimensions',KA+'/math/geometry-home/geometry-lines/points-lines-planes/v/specifying-planes-in-three-dimensions'],
+ measure:['Measuring line segments',KA+'/math/geometry-home/geometry-lines/basic-geo-measuring-segments/v/measuring-segments'],
+ distPy:['Finding distance with the Pythagorean theorem',KA+'/math/8th-engage-ny/engage-8th-module-7/8th-module-7-topic-c/v/example-finding-distance-with-pythagorean-theorem'],
+ dist:['Distance formula',KA+'/math/geometry/hs-geo-analytic-geometry/hs-geo-distance-and-midpoints/v/distance-formula'],
+ divide:['Dividing line segments',KA+'/math/geometry-home/analytic-geometry-topic/cc-distances-between-points/v/ratios-of-distances-between-colinear-points'],
+ mid:['Midpoint formula (and finding a missing endpoint)',KA+'/math/geometry/hs-geo-analytic-geometry/hs-geo-distance-and-midpoints/v/midpoint-formula'],
+ angAdd:['Angle addition practice (with video)','https://en.khanacademy.org/math/algebra-basics/alg-basics-equations-and-geometry/equations-geometry/e/angle_addition_postulate'],
+ compSupp:['Complementary & supplementary angles',KA+'/tag/complementary-and-supplementary-angles'],
+ compAlg:['Equation practice with complementary angles',KA+'/math/geometry/hs-geo-foundations/hs-geo-angles/v/example-using-algebra-to-find-measure-of-complementary-angles'],
+ suppAlg:['Equation practice with supplementary angles',KA+'/math/engageny-geo/geo-1/geo-1b-point/v/example-using-algebra-to-find-measure-of-supplementary-angles'],
+ vert:['Vertical angles',KA+'/math/geometry/hs-geo-foundations/hs-geo-angles/v/angles-at-the-intersection-of-two-lines']
+};
+const SKILL_VIDEOS={s14c:['distPy','dist'],s11a:['terms','euclid'],s11b:['euclid'],s12a:['lines','rays'],s12b:['planes'],s13a:['measure'],s13b:['measure'],s14a:['measure'],s14b:['distPy','dist'],s15:['divide'],s16:['divide'],s17a:['mid'],s17b:['mid'],s17c:['mid'],a1:['angAdd'],a4:['angAdd'],a2:['compSupp','compAlg','suppAlg'],a3:['vert','suppAlg']};
+function videoLinks(skill){
+  const ks=SKILL_VIDEOS[skill];
+  if(ks) return `<div class="vids">▶️ <b>Watch:</b> `+ks.map(k=>`<a href="${V[k][1]}" target="_blank" rel="noopener">${esc(V[k][0])}</a>`).join(' · ')+`</div>`;
+  const L=LESSONS[SKILLS[skill].lesson];
+  return `<div class="vids">▶️ <a href="https://www.khanacademy.org/search?page_search_query=${encodeURIComponent(L.video)}" target="_blank" rel="noopener">Find a Khan Academy video on this</a></div>`;
+}
+
+/* ---------- share with teacher ---------- */
+function plain(html){const d=document.createElement('div');d.innerHTML=String(html).replace(/<br\s*\/?>/g,' ');return d.textContent.replace(/\s+/g,' ').trim();}
+function ansOf(q){return q.kind==='multi'?q.fields.map(f=>f.tol>.04?'≈ '+f.ans.toFixed(1):fmtN(f.ans)).join(', '):q.kind==='mc'?q.options.find(o=>o.ok).t:q.kind==='num'?fmtAns(q):P(...q.ans);}
+function teacherCard(){
+  return `<div class="card hero" style="border-color:var(--accent)"><h3>📤 Show your teacher</h3>
+  <p class="small" style="margin:4px 0 10px">Copy your results into a Google Doc and share it with your teacher, or bring it to extra help. It lists every problem you missed with the worked steps.</p>
+  <label class="small muted" for="tq">What do you still not understand? Write your question for your teacher (optional):</label>
+  <textarea id="tq" style="min-height:70px;margin-top:6px" placeholder="Example: I don’t get why you subtract in the distance formula when the numbers are negative."></textarea>
+  <div class="row" style="margin-top:10px"><button class="btn orange" onclick="copyTeacher()">Copy for my teacher</button><a class="btn ghost" href="https://docs.new" target="_blank" rel="noopener" style="text-decoration:none">Open a new Google Doc ↗</a></div>
+  <ol class="small muted" style="margin:10px 0 0;padding-left:20px"><li>Click <b>Copy for my teacher</b>.</li><li>Open a new Google Doc and paste: <b>Ctrl + V</b> on a computer, or tap and hold → <b>Paste</b> on an iPad.</li><li>Click <b>Share</b> and add your teacher, or attach the Doc in Google Classroom.</li></ol></div>`;
+}
+function teacherReport(question){
+  const e=run.entry,r=run.results,missed=r.filter(x=>!x.clean);
+  const by={};r.forEach(x=>{by[x.skill]=by[x.skill]||{c:0,t:0};by[x.skill].t++;if(x.clean)by[x.skill].c++;});
+  const T=[],H=[];
+  const add=(t,h)=>{T.push(t);H.push(h??`<p>${esc(t)}</p>`);};
+  const who=state.name?state.name+'’s':'My';add(`${who} Geometry practice: ${e.title}`,`<h2>${esc(who)} Geometry practice: ${esc(e.title)}</h2>`);
+  add(`${niceDate(e.date)} · ${e.clean}/${e.total} correct on the first try (${e.pct}%)${run.test?' · practice test, no hints':''}`);
+  if(question&&question.trim()){add('My question:',`<h3>My question</h3>`);add(question.trim(),`<p><b>${esc(question.trim())}</b></p>`);}
+  add('Results by skill:',`<h3>Results by skill</h3>`);
+  Object.entries(by).forEach(([k,v])=>add(`- ${SKILLS[k].name}: ${v.c}/${v.t}`,`<p>• ${esc(SKILLS[k].name)}: ${v.c}/${v.t}</p>`));
+  if(missed.length){add('Problems I missed or needed help on:',`<h3>Problems I missed or needed help on</h3>`);
+    missed.forEach((x,i)=>{const q=x.q;if(!q)return;const pr=plain(q.prompt)+(q.svg?' (has a diagram)':'');
+      add(`${i+1}. ${pr}`,`<p><b>${i+1}. ${esc(pr)}</b></p>`);
+      add(`   My answer: ${plain(x.given)}${x.correct?' (correct after '+(x.hint?'a hint':'a second try')+')':''}  |  Correct answer: ${plain(ansOf(q))}`,`<p>My answer: ${esc(plain(x.given))}${x.correct?' (correct after '+(x.hint?'a hint':'a second try')+')':''} · Correct answer: <b>${esc(plain(ansOf(q)))}</b></p>`);
+      if(x.trapMsg)add(`   What went wrong: ${plain(x.trapMsg)}`,`<p><i>What went wrong:</i> ${esc(plain(x.trapMsg))}</p>`);
+      if(q.steps)add('   Steps: '+q.steps.map(plain).join('  →  '),`<p><i>Steps:</i> ${q.steps.map(z=>esc(plain(z))).join(' → ')}</p>`);
+    });}
+  else add('No misses this time!');
+  return {text:T.join('\n'),html:H.join('')};
+}
+function copyTeacher(){
+  const q=(document.getElementById('tq')||{}).value||'';const {text,html}=teacherReport(q);
+  const done=()=>toast('Copied! Now paste it into a Google Doc.');
+  const fallback=()=>{const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');done();}catch(e){toast('Copy didn’t work. Try again.');}ta.remove();};
+  try{
+    if(window.ClipboardItem&&navigator.clipboard&&navigator.clipboard.write){
+      navigator.clipboard.write([new ClipboardItem({'text/html':new Blob([html],{type:'text/html'}),'text/plain':new Blob([text],{type:'text/plain'})})]).then(done).catch(()=>{(navigator.clipboard.writeText?navigator.clipboard.writeText(text):Promise.reject()).then(done).catch(fallback);});
+    } else if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(done).catch(fallback);}
+    else fallback();
+  }catch(e){fallback();}
+}
+
+/* ---------- progress ---------- */
+function weekStart(){const d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate()-((d.getDay()+6)%7));return todayStr(d);}
+function stats(){
+  const all=Object.values(state.skills);const att=all.reduce((a,s)=>a+s.att,0),cl=all.reduce((a,s)=>a+s.clean,0);
+  const ws=weekStart();const wk=state.log.filter(l=>l.date>=ws);
+  return {att,pct:att?Math.round(100*cl/att):0,daysWeek:new Set(wk.map(l=>l.date)).size,wkProblems:wk.reduce((a,l)=>a+l.total,0),wkPct:wk.length?Math.round(100*wk.reduce((a,l)=>a+l.clean,0)/Math.max(1,wk.reduce((a,l)=>a+l.total,0))):0,sessDone:SESSIONS.filter(s=>state.sessions[s.id]).length};
+}
+function topTrap(s){const e=Object.entries(s.traps||{}).sort((a,b)=>b[1]-a[1])[0];return e?e[0]:null;}
+function summaryText(){
+  const st=stats();const lines=[];
+  lines.push(`Geometry Coach: ${state.name?state.name+'’s':'my'} progress (${niceDate(todayStr())})`);
+  lines.push(`This week: practiced ${st.daysWeek} day(s), ${st.wkProblems} problems, ${st.wkPct}% right on first try.`);
+  lines.push(`Path: ${st.sessDone}/${SESSIONS.length} sessions done.${nextSession()?' Next: '+nextSession().title+'.':''}`);
+  const pts=state.log.filter(l=>l.title.startsWith('Practice test'));
+  if(pts.length)lines.push(`Module 1 practice tests: ${pts.slice(0,4).reverse().map(l=>`${l.pct}% (${niceDate(l.date)})`).join(' → ')}.`);
+  const m=Object.keys(SKILLS).filter(k=>status(k)==='mastered');
+  if(m.length)lines.push(`Mastered: ${m.map(k=>SKILLS[k].name).join('; ')}.`);
+  const w=Object.keys(SKILLS).filter(k=>['practicing','close'].includes(status(k)));
+  if(w.length){lines.push('Still working on:');w.forEach(k=>{const s=state.skills[k],t=topTrap(s);lines.push(`- ${SKILLS[k].name} (${s.clean}/${s.att} first try)${t?`, most common mistake: ${t}`:''}`);});}
+  const recent=state.log.slice(0,5);if(recent.length){lines.push('Recent:');recent.forEach(l=>lines.push(`- ${niceDate(l.date)}: ${l.title}, ${l.clean}/${l.total}`));}
+  return lines.join('\n');
+}
+function renderProgress(){
+  const st=stats();
+  let h=`<h1>Progress</h1><p class="sub">Progress is saved in this browser on this device. Use the same device each time. To check in, press “Copy summary” and text it to Dad.</p>
+  <div class="grid"><div class="stat"><b>${st.sessDone}/${SESSIONS.length}</b><span>sessions done</span></div><div class="stat"><b>${st.daysWeek}</b><span>days practiced this week</span></div><div class="stat"><b>${st.att}</b><span>problems solved</span></div><div class="stat"><b>${st.pct}%</b><span>right on first try</span></div></div>
+  <h2>Skills</h2><div class="card">`+Object.keys(SKILLS).map(k=>{const s=state.skills[k],stt=STATUS[status(k)];const acc=s&&s.att?Math.round(100*s.clean/s.att):0;const t=s?topTrap(s):null;
+    return `<div class="skill"><span class="nm">${esc(SKILLS[k].name)}<small>${s&&s.att?`${s.clean}/${s.att} first try${t?` · most common mistake: ${esc(t)}`:''}`:'Not tried yet'}</small></span><span class="minibar"><span class="bar" style="display:block"><i style="width:${acc}%;background:${acc>=80?'var(--good)':acc>=60?'var(--warn)':'var(--accent)'}"></i></span></span><span class="tag ${stt[1]}">${stt[0]}</span></div>`;}).join('')+`</div>
+  <h2>Recent activity</h2><div class="card">${state.log.length?state.log.slice(0,10).map(l=>`<div class="skill"><span class="nm">${esc(l.title)}<small>${niceDate(l.date)}</small></span><span class="mono">${l.clean}/${l.total}</span></div>`).join(''):'<p class="muted" style="margin:0">Nothing yet. Start your first session!</p>'}</div>
+  <h2>📲 Send to Dad</h2><div class="card"><p class="small muted" style="margin-top:0">Copy this and text or email it to Dad. You can also paste it into a Google Doc for your teacher. He can paste it into Claude to plan next week around what you’re stuck on.</p>
+  <textarea id="sumTxt" readonly>${esc(summaryText())}</textarea>
+  <div class="row" style="margin-top:10px"><button class="btn" onclick="copyText('sumTxt','Summary copied. Paste it into a text to Dad.')">Copy summary</button></div></div>
+  <h2>Backup &amp; move</h2><div class="card"><p class="small muted" style="margin-top:0">Switching computers or browsers? Copy your backup code here, then paste it into “Restore” on the new one.</p>
+  <textarea id="bk" readonly style="min-height:70px">${esc(btoa(unescape(encodeURIComponent(JSON.stringify(state)))))}</textarea>
+  <div class="row" style="margin:10px 0 18px"><button class="btn alt" onclick="copyText('bk','Backup code copied')">Copy backup code</button></div>
+  <textarea id="rs" placeholder="Paste a backup code here to restore" style="min-height:70px"></textarea>
+  <div class="row" style="margin-top:10px"><button class="btn ghost" onclick="restore()">Restore</button><span style="flex:1"></span><button class="btn ghost" style="color:var(--bad)" onclick="resetAll()">Reset all progress</button></div><div id="rsMsg"></div></div>`;
+  main.innerHTML=h;
+}
+function copyText(id,msg){const el=document.getElementById(id);const t=el.value;(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>toast(msg)).catch(()=>{el.removeAttribute('readonly');el.focus();el.select();try{document.execCommand('copy');toast(msg);}catch(e){toast('Select the text and press Ctrl/Cmd + C');}el.setAttribute('readonly','');});}
+function restore(){const v=document.getElementById('rs').value.trim();try{const s=JSON.parse(decodeURIComponent(escape(atob(v))));if(!s.skills)throw 0;state=Object.assign({skills:{},sessions:{},log:[],days:[],recent:{}},s);save();toast('Progress restored');render();}catch(e){document.getElementById('rsMsg').innerHTML='<div class="fb bad">That code didn’t work. Make sure you copied the whole thing.</div>';}}
+let resetArm=false;
+function resetAll(){const m=document.getElementById('rsMsg');if(!resetArm){resetArm=true;m.innerHTML='<div class="fb hint">This erases ALL progress. Press “Reset all progress” again to confirm.</div>';setTimeout(()=>resetArm=false,6000);return;}state={skills:{},sessions:{},log:[],days:[],recent:{}};save();resetArm=false;toast('Progress reset');render();}
+
+load();render();
+</script>
+</body>
+</html>
